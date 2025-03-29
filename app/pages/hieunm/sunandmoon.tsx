@@ -51,7 +51,7 @@ export default function SunAndMoonScreen() {
 
             <View style={styles.sunChart}>
               <Image
-                source={require('../../assets/images/icon.png')}
+                source={require('../../../assets/images/icon.png')}
                 style={styles.chartImage}
                 resizeMode="contain"
               />
@@ -80,7 +80,7 @@ export default function SunAndMoonScreen() {
               <Text style={styles.phaseLabel}>Pha trăng hiện tại</Text>
               <View style={styles.phaseInfo}>
                 <Image
-                  source={require('../../assets/images/icon.png')}
+                  source={require('../../../assets/images/icon.png')}
                   style={styles.moonImage}
                   resizeMode="contain"
                 />

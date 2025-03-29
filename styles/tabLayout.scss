@@ -1,0 +1,54 @@
+.tabBar {
+  border-radius: 20px;
+  margin: 10px;
+  height: 60px;
+  backdrop-filter: blur(10px);
+  
+  &__ios {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  &__android {
+    elevation: 8;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  &__dark {
+    background-color: rgba(30, 30, 30, 0.8);
+  }
+}
+
+.tabButton {
+  padding: 8px 0;
+  transition: all 0.3s ease;
+  
+  &__active {
+    transform: translateY(-5px);
+  }
+}
+
+.tabIcon {
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+  }
+  
+  &__active {
+    background-color: rgba(120, 120, 255, 0.2);
+  }
+}
+
+.tabLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
