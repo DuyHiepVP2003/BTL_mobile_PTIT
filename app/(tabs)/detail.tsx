@@ -13,7 +13,7 @@ export default function TabTwoScreen() {
 
       {/* Function Buttons */}
       <ButtonControl />
-      
+
       {/* Chatbot Button */}
       <ChatBotButton />
     </SafeAreaView>
