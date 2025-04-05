@@ -15,7 +15,16 @@ export const ButtonControl = () => {
   type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
 
   const handleClickSunMoon = () => {
-    router.push('/pages/hieunm/sunandmoon')
+    router.push('/pages/sunandmoon')
+  }
+
+  const handleWarning = () => {
+    router.push('/pages/bad-weather')
+  }
+
+  const handleClickChatBotGuide = () => {
+    router.push('/pages/chatbotguide')
+    console.log('Chatbot guide')
   }
 
   const buttons = [
@@ -27,12 +36,12 @@ export const ButtonControl = () => {
     {
       title: 'Cảnh báo thời tiết xấu hôm nay',
       icon: 'warning-outline',
-      onPress: () => console.log('Weather warning')
+      onPress: handleWarning
     },
     {
       title: 'Hướng dẫn sử dụng chatbot',
       icon: 'help-circle-outline',
-      onPress: () => console.log('Chatbot guide')
+      onPress: handleClickChatBotGuide
     },
     {
       title: 'Cài đặt thông báo cảnh báo',
