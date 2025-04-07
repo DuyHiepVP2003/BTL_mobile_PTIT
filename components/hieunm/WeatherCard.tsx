@@ -9,9 +9,11 @@ import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { BlurView } from 'expo-blur'
+import { useRouter } from 'expo-router'
 
 export const WeatherCard = () => {
   type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
+  const router = useRouter()
 
   // This would come from your API in the future
   const weatherData = {
@@ -55,8 +57,7 @@ export const WeatherCard = () => {
   const weatherIcon = getWeatherIcon(weatherData.condition)
 
   const handleSearch = () => {
-    console.log('Search location')
-    // Implement search functionality here
+    router.push('/pages/weather-search')
   }
 
   return (
