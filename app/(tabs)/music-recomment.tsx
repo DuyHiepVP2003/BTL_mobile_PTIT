@@ -11,39 +11,33 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import tw from "twrnc";
-import CustomFlatList from "@/components/music-recomment/CustomFlatList";
+import { useState } from "react";
+import Base from "@/components/music-recomment/Base";
+import Playlists from "@/components/music-recomment/Playlists";
+import Artist from "@/components/music-recomment/Artist";
+import Song from "@/components/music-recomment/Song";
 
 const tabBar = [
   {
-    name: "Playlist",
-  },
-  {
-    name: "Nghệ sĩ",
-  },
-  {
-    name: "Ca khúc",
-  },
-];
-
-const PLAYLIST_DATA = [
-  {
     id: 1,
-    name: "name",
-    album: "album",
+    name: "playlist",
+    title: "Playlist",
   },
   {
     id: 2,
-    name: "name",
-    album: "album",
+    name: "artist",
+    title: "Nghệ sĩ",
   },
   {
     id: 3,
-    name: "name",
-    album: "album",
+    name: "song",
+    title: "Ca khúc",
   },
 ];
 
 export default function TabTwoScreen() {
+  const [activeTab, setActiveTab] = useState("");
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -53,33 +47,21 @@ export default function TabTwoScreen() {
         {tabBar.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={tw`flex-1 bg-white rounded-[14px] py-[8px]`}
+            style={tw`flex-1 ${
+              activeTab === item.name ? "bg-[#E0B6FF]" : "bg-white"
+            } rounded-[14px] py-[8px]`}
+            onPress={() => setActiveTab(item.name)}
           >
             <ThemedText style={tw`text-[14px] text-center`}>
-              {item.name}
+              {item.title}
             </ThemedText>
           </TouchableOpacity>
         ))}
       </View>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Gợi ý cho hôm nay</ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Playlist</ThemedText>
-      </ThemedView>
-      <CustomFlatList data={PLAYLIST_DATA} horizontal />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Ca sĩ</ThemedText>
-      </ThemedView>
-      <CustomFlatList data={PLAYLIST_DATA} horizontal imageCircle />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Ca khúc</ThemedText>
-      </ThemedView>
-      <CustomFlatList data={PLAYLIST_DATA} horizontal />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Postcasts</ThemedText>
-      </ThemedView>
-      <CustomFlatList data={PLAYLIST_DATA} horizontal />
+      {activeTab === "playlist" && <Playlists />}
+      {activeTab === "artist" && <Artist />}
+      {activeTab === "song" && <Song />}
+      {activeTab === "" && <Base />}
     </ParallaxScrollView>
   );
 }
@@ -94,9 +76,5 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
-  },
-  playlist: {
-    rowGap: 8,
-    columnGap: 8,
   },
 });
