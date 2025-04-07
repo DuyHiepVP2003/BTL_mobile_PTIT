@@ -24,7 +24,10 @@ export const ButtonControl = () => {
 
   const handleClickChatBotGuide = () => {
     router.push('/pages/chatbotguide')
-    console.log('Chatbot guide')
+  }
+
+  const handleClickSettingWarning = () => {
+    router.push('/pages/warning-setting')
   }
 
   const buttons = [
@@ -46,7 +49,7 @@ export const ButtonControl = () => {
     {
       title: 'Cài đặt thông báo cảnh báo',
       icon: 'notifications-outline',
-      onPress: () => console.log('Notification settings')
+      onPress: handleClickSettingWarning
     }
   ]
 
