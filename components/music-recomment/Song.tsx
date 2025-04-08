@@ -13,21 +13,6 @@ const SONG = [
     name: "SONG 1",
     description: "Thông tin chi tiết SONG 1",
   },
-  {
-    id: 3,
-    name: "SONG 1",
-    description: "Thông tin chi tiết SONG 1",
-  },
-  {
-    id: 4,
-    name: "SONG 1",
-    description: "Thông tin chi tiết SONG 1",
-  },
-  {
-    id: 5,
-    name: "SONG 1",
-    description: "Thông tin chi tiết SONG 1",
-  },
 ];
 
 const Song = () => {

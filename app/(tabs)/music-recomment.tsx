@@ -70,7 +70,7 @@ export default function TabTwoScreen() {
           ))}
         </View>
       </View>
-      <ScrollView style={tw`p-[18px]`}>
+      <ScrollView style={tw`p-[18px] h-full`}>
         {activeTab === "playlist" && <Playlists />}
         {activeTab === "artist" && <Artist />}
         {activeTab === "song" && <Song />}
