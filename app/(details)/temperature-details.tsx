@@ -7,8 +7,10 @@ import Svg, { Path, Circle, Line, Text as SvgText, Rect } from 'react-native-svg
 
 const screenWidth = Dimensions.get('window').width;
 
+
 export default function TemperatureDetailsScreen() {
   const router = useRouter();
+  type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
   
   // Mock hourly forecast data
   const hourlyForecast = [
@@ -225,7 +227,7 @@ export default function TemperatureDetailsScreen() {
               {hourlyForecast.map((item, index) => (
                 <View key={index} style={styles.hourlyItem}>
                   <Text style={styles.hourlyTime}>{item.time}</Text>
-                  <Ionicons name={item.icon} size={24} color="#6a3093" style={styles.hourlyIcon} />
+                  <Ionicons name={item.icon as IoniconsName} size={24} color="#6a3093" style={styles.hourlyIcon} />
                   <Text style={styles.hourlyTemp}>{item.temp}°</Text>
                 </View>
               ))}
@@ -284,6 +286,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0e6ff',
+    paddingTop: 32,
   },
   header: {
     flexDirection: 'row',

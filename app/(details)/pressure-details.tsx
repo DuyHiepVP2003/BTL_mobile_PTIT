@@ -4,7 +4,6 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
 import Svg, { Path, Circle, Line, Text as SvgText, Rect } from 'react-native-svg';
-
 const screenWidth = Dimensions.get('window').width;
 
 export default function PressureDetailsScreen() {
@@ -239,6 +238,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0e6ff',
+    paddingTop: 32,
   },
   header: {
     flexDirection: 'row',
