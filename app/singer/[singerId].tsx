@@ -35,7 +35,7 @@ export default function TabTwoScreen() {
   return (
     <>
       <View style={tw`bg-[#F6EDFF]`}>
-        <View style={tw`bg-[#ffffff] py-[20px] rounded-b-[54px]`}>
+        <View style={tw`bg-[#ffffff] py-[30px] rounded-b-[54px]`}>
           <View style={tw`flex justify-center items-center`}>
             <Text style={tw`text-[16px] font-semibold text-[#383838]`}>
               Profile
