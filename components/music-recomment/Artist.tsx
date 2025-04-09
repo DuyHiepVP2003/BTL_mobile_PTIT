@@ -37,7 +37,7 @@ const Artist = () => {
       <Text style={tw`mb-[18px]`}>Artist</Text>
       <CustomTabList
         data={ARTIST}
-        onPress={() => router.push("/(music)/[id]/singer")}
+        onPress={() => router.navigate(`/singer/123`)}
       />
     </SafeAreaView>
   );

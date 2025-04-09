@@ -1,6 +1,4 @@
-import { StyleSheet } from "react-native";
-import { ThemedText } from "../ThemedText";
-import { ThemedView } from "../ThemedView";
+import { StyleSheet, Text, View } from "react-native";
 import CustomFlatList from "./CustomFlatList";
 
 const PLAYLIST_DATA = [
@@ -24,24 +22,24 @@ const PLAYLIST_DATA = [
 const Base = () => {
   return (
     <>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Gợi ý cho hôm nay</ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Playlist</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Gợi ý cho hôm nay</Text>
+      </View>
+      <View style={styles.titleContainer}>
+        <Text>Playlist</Text>
+      </View>
       <CustomFlatList data={PLAYLIST_DATA} horizontal />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Ca sĩ</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Ca sĩ</Text>
+      </View>
       <CustomFlatList data={PLAYLIST_DATA} horizontal imageCircle />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Ca khúc</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Ca khúc</Text>
+      </View>
       <CustomFlatList data={PLAYLIST_DATA} horizontal />
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="default">Postcasts</ThemedText>
-      </ThemedView>
+      <View style={styles.titleContainer}>
+        <Text>Postcasts</Text>
+      </View>
       <CustomFlatList data={PLAYLIST_DATA} horizontal />
     </>
   );
