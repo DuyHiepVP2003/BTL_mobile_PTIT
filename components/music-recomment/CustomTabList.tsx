@@ -1,24 +1,27 @@
-import { FlatList, Image, View } from "react-native";
+import { FlatList, Image, Pressable, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import tw from "twrnc";
 
 type CustomTabListProps = {
   data: any;
   imageCircle?: boolean;
+  onPress?: () => void;
 };
 
 export default function CustomTabList({
   data,
   imageCircle,
+  onPress,
 }: CustomTabListProps) {
   return (
     <>
       {data.map((item: any, index: number) => (
-        <View
+        <Pressable
           key={index}
           style={tw.style(
             "flex-row items-center bg-[#F3E8FF] rounded-xl mb-[18px]"
           )}
+          onPress={onPress}
         >
           <Image
             source={require("@/assets/images/playlist.png")}
@@ -33,7 +36,7 @@ export default function CustomTabList({
               {item.description}
             </ThemedText>
           </View>
-        </View>
+        </Pressable>
       ))}
     </>
   );
