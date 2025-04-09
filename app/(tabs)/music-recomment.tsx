@@ -2,15 +2,11 @@ import {
   StyleSheet,
   Image,
   View,
-  FlatList,
   Text,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import tw from "twrnc";
 import { useState } from "react";
 import Base from "@/components/music-recomment/Base";
@@ -63,9 +59,7 @@ export default function TabTwoScreen() {
               } rounded-[14px] py-[8px]`}
               onPress={() => setActiveTab(item.name)}
             >
-              <ThemedText style={tw`text-[14px] text-center`}>
-                {item.title}
-              </ThemedText>
+              <Text style={tw`text-[14px] text-center`}>{item.title}</Text>
             </TouchableOpacity>
           ))}
         </View>

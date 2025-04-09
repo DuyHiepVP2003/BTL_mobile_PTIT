@@ -1,5 +1,4 @@
-import { FlatList, Image, Pressable, View } from "react-native";
-import { ThemedText } from "../ThemedText";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 
 type CustomTabListProps = {
@@ -29,12 +28,10 @@ export default function CustomTabList({
             resizeMode="cover"
           />
           <View style={tw.style("flex-1")}>
-            <ThemedText style={tw.style("text-[14px] font-bold")}>
-              {item.name}
-            </ThemedText>
-            <ThemedText style={tw.style("text-[12px] text-gray-500")}>
+            <Text style={tw.style("text-[14px] font-bold")}>{item.name}</Text>
+            <Text style={tw.style("text-[12px] text-gray-500")}>
               {item.description}
-            </ThemedText>
+            </Text>
           </View>
         </Pressable>
       ))}
