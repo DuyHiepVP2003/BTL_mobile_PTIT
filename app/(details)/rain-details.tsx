@@ -6,6 +6,7 @@ import { Dimensions } from 'react-native';
 import Svg, { Path, Circle, Line, Text as SvgText, Rect, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 
 const screenWidth = Dimensions.get('window').width;
+type colorArr = [string, string];
 
 export default function RainDetailsScreen() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function RainDetailsScreen() {
         <Text style={styles.hourText}>{item.hour} {item.hour >= 12 ? 'PM' : 'AM'}</Text>
         <View style={styles.barContainer}>
           <LinearGradient
-            colors={getGradientColors(item.value)}
+            colors={getGradientColors(item.value) as colorArr}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={[styles.barGradient, { width: `${item.value}%` }]}
@@ -342,6 +343,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0e6ff',
+    paddingTop: 32,
   },
   header: {
     flexDirection: 'row',
