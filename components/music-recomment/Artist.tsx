@@ -2,41 +2,23 @@ import { SafeAreaView, Text } from "react-native";
 import CustomTabList from "./CustomTabList";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
+import useArtists from "@/hooks/useArtist";
 
-const ARTIST = [
-  {
-    id: 1,
-    name: "ARTIST 1",
-    description: "Thông tin chi tiết ARTIST 1",
-  },
-  {
-    id: 2,
-    name: "ARTIST 1",
-    description: "Thông tin chi tiết ARTIST 1",
-  },
-  {
-    id: 3,
-    name: "ARTIST 1",
-    description: "Thông tin chi tiết ARTIST 1",
-  },
-  {
-    id: 4,
-    name: "ARTIST 1",
-    description: "Thông tin chi tiết ARTIST 1",
-  },
-  {
-    id: 5,
-    name: "ARTIST 1",
-    description: "Thông tin chi tiết ARTIST 1",
-  },
-];
 const Artist = () => {
   const router = useRouter();
+  const { artists } = useArtists();
   return (
     <SafeAreaView>
       <Text style={tw`mb-[18px]`}>Artist</Text>
       <CustomTabList
-        data={ARTIST}
+        data={artists.map((item: any) => {
+          return {
+            id: item?._id,
+            name: item?.name,
+            description: item?.genres.join(","),
+            imageUrl: item?.images[0]?.url,
+          };
+        })}
         onPress={() => router.navigate(`/singer/123`)}
       />
     </SafeAreaView>
