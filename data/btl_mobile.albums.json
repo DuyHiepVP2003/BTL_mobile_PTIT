@@ -1,0 +1,1302 @@
+[{
+  "_id": {
+    "$oid": "67fd276cdf8f13ed52f0693a"
+  },
+  "album_type": "album",
+  "total_tracks": 24,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/1wmnEWgcDdCcOujQpLwYxc"
+  },
+  "href": "https://api.spotify.com/v1/albums/1wmnEWgcDdCcOujQpLwYxc",
+  "id": "1wmnEWgcDdCcOujQpLwYxc",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273f3b9c8061be9fc0bdebad64e",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd276cdf8f13ed52f0693b"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02f3b9c8061be9fc0bdebad64e",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd276cdf8f13ed52f0693c"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851f3b9c8061be9fc0bdebad64e",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd276cdf8f13ed52f0693d"
+      }
+    }
+  ],
+  "name": "THE WXRDIES",
+  "release_date": "2024-11-12",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:1wmnEWgcDdCcOujQpLwYxc",
+  "genres": [],
+  "label": "Universal Music Indochina Distributed Labels",
+  "popularity": 67,
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9816"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2948deff4a69b9dce3f9"
+  },
+  "album_type": "album",
+  "total_tracks": 7,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/607WaLGJAQc1ln8Wx7xUQU"
+  },
+  "href": "https://api.spotify.com/v1/albums/607WaLGJAQc1ln8Wx7xUQU",
+  "id": "607WaLGJAQc1ln8Wx7xUQU",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b27349de9f38af76101204c709e2",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2948deff4a69b9dce3fa"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e0249de9f38af76101204c709e2",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2948deff4a69b9dce3fb"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000485149de9f38af76101204c709e2",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2948deff4a69b9dce3fc"
+      }
+    }
+  ],
+  "name": "Trái Tim Anh Nhưng Ngáo Hơn",
+  "release_date": "2024-09-03",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:607WaLGJAQc1ln8Wx7xUQU",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9816"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2970bddf8c22217a8443"
+  },
+  "album_type": "album",
+  "total_tracks": 17,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/7jv2Nt0w8iDUaSuwM7XqTU"
+  },
+  "href": "https://api.spotify.com/v1/albums/7jv2Nt0w8iDUaSuwM7XqTU",
+  "id": "7jv2Nt0w8iDUaSuwM7XqTU",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2734454ef01ea52ecf22987ede2",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2970bddf8c22217a8444"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e024454ef01ea52ecf22987ede2",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2970bddf8c22217a8445"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048514454ef01ea52ecf22987ede2",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2970bddf8c22217a8446"
+      }
+    }
+  ],
+  "name": "420ent.",
+  "release_date": "2023-04-20",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:7jv2Nt0w8iDUaSuwM7XqTU",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9816"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd29b37673f0a4f01ca0e0"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/7BSpM30tGOKUst7dZCtGLv"
+  },
+  "href": "https://api.spotify.com/v1/albums/7BSpM30tGOKUst7dZCtGLv",
+  "id": "7BSpM30tGOKUst7dZCtGLv",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b27378e8db9313491128963bd638",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd29b37673f0a4f01ca0e1"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e0278e8db9313491128963bd638",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd29b37673f0a4f01ca0e2"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000485178e8db9313491128963bd638",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd29b37673f0a4f01ca0e3"
+      }
+    }
+  ],
+  "name": "id thang máy (feat. 267)",
+  "release_date": "2024-07-31",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:7BSpM30tGOKUst7dZCtGLv",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981a"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd29dc51c0804e38b16919"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/5h1oI3rtSlCgdPn2HDldsb"
+  },
+  "href": "https://api.spotify.com/v1/albums/5h1oI3rtSlCgdPn2HDldsb",
+  "id": "5h1oI3rtSlCgdPn2HDldsb",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273f3e5fb9f23be819abfced6ca",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd29dc51c0804e38b1691a"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02f3e5fb9f23be819abfced6ca",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd29dc51c0804e38b1691b"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851f3e5fb9f23be819abfced6ca",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd29dc51c0804e38b1691c"
+      }
+    }
+  ],
+  "name": "2 4",
+  "release_date": "2024-07-31",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:5h1oI3rtSlCgdPn2HDldsb",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981a"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a08c9a6b6ea1289dce4"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/3EM29OyZxqtQ1J0QIJ5gEj"
+  },
+  "href": "https://api.spotify.com/v1/albums/3EM29OyZxqtQ1J0QIJ5gEj",
+  "id": "3EM29OyZxqtQ1J0QIJ5gEj",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2735d0ff12b85f5ada236c44b0f",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a08c9a6b6ea1289dce5"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e025d0ff12b85f5ada236c44b0f",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a08c9a6b6ea1289dce6"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048515d0ff12b85f5ada236c44b0f",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a08c9a6b6ea1289dce7"
+      }
+    }
+  ],
+  "name": "Phía Sau Em (Thazh Remix)",
+  "release_date": "2025-02-14",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:3EM29OyZxqtQ1J0QIJ5gEj",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a1e1f91585a7d9e133f"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/71R252HV4gdJCMbQ5vS8Iy"
+  },
+  "href": "https://api.spotify.com/v1/albums/71R252HV4gdJCMbQ5vS8Iy",
+  "id": "71R252HV4gdJCMbQ5vS8Iy",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2731604cc1493d110092248566a",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a1e1f91585a7d9e1340"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e021604cc1493d110092248566a",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a1e1f91585a7d9e1341"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048511604cc1493d110092248566a",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a1e1f91585a7d9e1342"
+      }
+    }
+  ],
+  "name": "Phía Sau Em (MiniC x LVT Remix)",
+  "release_date": "2025-02-14",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:71R252HV4gdJCMbQ5vS8Iy",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a295251e6ce71c62b61"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/5KM4likRYtocX9XUfyTgNn"
+  },
+  "href": "https://api.spotify.com/v1/albums/5KM4likRYtocX9XUfyTgNn",
+  "id": "5KM4likRYtocX9XUfyTgNn",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2734179343547954452eb90a2dc",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a295251e6ce71c62b62"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e024179343547954452eb90a2dc",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a295251e6ce71c62b63"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048514179343547954452eb90a2dc",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a295251e6ce71c62b64"
+      }
+    }
+  ],
+  "name": "Xuân Đang Đến Bên Em",
+  "release_date": "2024-02-15",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:5KM4likRYtocX9XUfyTgNn",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a38e3d08e959430f1c4"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/6tuVefmTg7JkCtBxIlU3ly"
+  },
+  "href": "https://api.spotify.com/v1/albums/6tuVefmTg7JkCtBxIlU3ly",
+  "id": "6tuVefmTg7JkCtBxIlU3ly",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b27355648d5b3a9ccd2425afa951",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a38e3d08e959430f1c5"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e0255648d5b3a9ccd2425afa951",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a38e3d08e959430f1c6"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000485155648d5b3a9ccd2425afa951",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a38e3d08e959430f1c7"
+      }
+    }
+  ],
+  "name": "Môi Chạm Môi (feat. Binz)",
+  "release_date": "2023-11-22",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:6tuVefmTg7JkCtBxIlU3ly",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb981e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a6131aa1ea1b59870ed"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/426INuH31zVA8r4NyJqZzs"
+  },
+  "href": "https://api.spotify.com/v1/albums/426INuH31zVA8r4NyJqZzs",
+  "id": "426INuH31zVA8r4NyJqZzs",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2733b5f52361e740b08d65f27f5",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a6131aa1ea1b59870ee"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e023b5f52361e740b08d65f27f5",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a6131aa1ea1b59870ef"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048513b5f52361e740b08d65f27f5",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a6131aa1ea1b59870f0"
+      }
+    }
+  ],
+  "name": "Thiên Lý Ơi - Qtrung Remix",
+  "release_date": "2025-01-17",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:426INuH31zVA8r4NyJqZzs",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9822"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a7036a9916c93c39b87"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/7i3TK6Jvdxixy02nUwBJGF"
+  },
+  "href": "https://api.spotify.com/v1/albums/7i3TK6Jvdxixy02nUwBJGF",
+  "id": "7i3TK6Jvdxixy02nUwBJGF",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273f3a50c21562ccbf011dc43c1",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a7036a9916c93c39b88"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02f3a50c21562ccbf011dc43c1",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a7036a9916c93c39b89"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851f3a50c21562ccbf011dc43c1",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a7036a9916c93c39b8a"
+      }
+    }
+  ],
+  "name": "Dưới Tán Cây Khô Hoa Nở",
+  "release_date": "2024-12-10",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:7i3TK6Jvdxixy02nUwBJGF",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9822"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a7d39ae7defab9a4dc4"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/6MrFYabg5tVaGM6CxwDAKK"
+  },
+  "href": "https://api.spotify.com/v1/albums/6MrFYabg5tVaGM6CxwDAKK",
+  "id": "6MrFYabg5tVaGM6CxwDAKK",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273419ffa1f3725371399c52182",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a7d39ae7defab9a4dc5"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02419ffa1f3725371399c52182",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a7d39ae7defab9a4dc6"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851419ffa1f3725371399c52182",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a7d39ae7defab9a4dc7"
+      }
+    }
+  ],
+  "name": "Thiên Lý Ơi (Lofi)",
+  "release_date": "2024-08-09",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:6MrFYabg5tVaGM6CxwDAKK",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9822"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2a9a1bb15ab7491083e4"
+  },
+  "album_type": "album",
+  "total_tracks": 9,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/0O3IzHXaHspsJCKd1wbhfl"
+  },
+  "href": "https://api.spotify.com/v1/albums/0O3IzHXaHspsJCKd1wbhfl",
+  "id": "0O3IzHXaHspsJCKd1wbhfl",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273a917b00fa1fcad1c34fb14cf",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2a9a1bb15ab7491083e5"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02a917b00fa1fcad1c34fb14cf",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2a9a1bb15ab7491083e6"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851a917b00fa1fcad1c34fb14cf",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2a9a1bb15ab7491083e7"
+      }
+    }
+  ],
+  "name": "CineLove",
+  "release_date": "2024-11-22",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:0O3IzHXaHspsJCKd1wbhfl",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9826"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2aa6bbd2bb065c4745c7"
+  },
+  "album_type": "album",
+  "total_tracks": 16,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/6UbdahsY16WIPdIqTnIVR0"
+  },
+  "href": "https://api.spotify.com/v1/albums/6UbdahsY16WIPdIqTnIVR0",
+  "id": "6UbdahsY16WIPdIqTnIVR0",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2733a0b1f8613d3a886b8313ad5",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2aa6bbd2bb065c4745c8"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e023a0b1f8613d3a886b8313ad5",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2aa6bbd2bb065c4745c9"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048513a0b1f8613d3a886b8313ad5",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2aa6bbd2bb065c4745ca"
+      }
+    }
+  ],
+  "name": "Những Ngày Đầu",
+  "release_date": "2017-01-01",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:6UbdahsY16WIPdIqTnIVR0",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9826"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2ab4f3338f821339f3f6"
+  },
+  "album_type": "album",
+  "total_tracks": 14,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/6VolTYHN9P3gZS1ugOkI1K"
+  },
+  "href": "https://api.spotify.com/v1/albums/6VolTYHN9P3gZS1ugOkI1K",
+  "id": "6VolTYHN9P3gZS1ugOkI1K",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273d8230115476ed18d7e288557",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2ab4f3338f821339f3f7"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02d8230115476ed18d7e288557",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2ab4f3338f821339f3f8"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851d8230115476ed18d7e288557",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2ab4f3338f821339f3f9"
+      }
+    }
+  ],
+  "name": "Anh Ghét Làm Bạn Em",
+  "release_date": "2013-09-15",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:6VolTYHN9P3gZS1ugOkI1K",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9826"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2ad092921ce5c3692e4d"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/6HOXlBgQcAXnZ6QIafzPzG"
+  },
+  "href": "https://api.spotify.com/v1/albums/6HOXlBgQcAXnZ6QIafzPzG",
+  "id": "6HOXlBgQcAXnZ6QIafzPzG",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2738922d04121df185f9787dfdb",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2ad092921ce5c3692e4e"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e028922d04121df185f9787dfdb",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2ad092921ce5c3692e4f"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048518922d04121df185f9787dfdb",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2ad092921ce5c3692e50"
+      }
+    }
+  ],
+  "name": "Vì Em Đã Quên Cuộc Tình",
+  "release_date": "2024-08-27",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:6HOXlBgQcAXnZ6QIafzPzG",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb982a"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2aed2ce7a97e21d5b2f7"
+  },
+  "album_type": "album",
+  "total_tracks": 8,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/3Z09WuEkWJTrQRJ7aFRY51"
+  },
+  "href": "https://api.spotify.com/v1/albums/3Z09WuEkWJTrQRJ7aFRY51",
+  "id": "3Z09WuEkWJTrQRJ7aFRY51",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273178c0bcd6f92107315535908",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2aed2ce7a97e21d5b2f8"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02178c0bcd6f92107315535908",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2aed2ce7a97e21d5b2f9"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851178c0bcd6f92107315535908",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2aed2ce7a97e21d5b2fa"
+      }
+    }
+  ],
+  "name": "dongvui harmony",
+  "release_date": "2022-11-09",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:3Z09WuEkWJTrQRJ7aFRY51",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb982e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b03c98483eec1568843"
+  },
+  "album_type": "album",
+  "total_tracks": 9,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/49Eksl80RVGkxElHu5cETP"
+  },
+  "href": "https://api.spotify.com/v1/albums/49Eksl80RVGkxElHu5cETP",
+  "id": "49Eksl80RVGkxElHu5cETP",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2732fea3ddea7ba9fc62d4cd622",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b03c98483eec1568844"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e022fea3ddea7ba9fc62d4cd622",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b03c98483eec1568845"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048512fea3ddea7ba9fc62d4cd622",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b03c98483eec1568846"
+      }
+    }
+  ],
+  "name": "Người Đang Yêu",
+  "release_date": "2024-01-19",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:49Eksl80RVGkxElHu5cETP",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9832"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b1a6edd5735989ec933"
+  },
+  "album_type": "album",
+  "total_tracks": 14,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/2DCbDdIBNRxx0SxLtgyd4D"
+  },
+  "href": "https://api.spotify.com/v1/albums/2DCbDdIBNRxx0SxLtgyd4D",
+  "id": "2DCbDdIBNRxx0SxLtgyd4D",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273fe0cbef064f18008462d29ef",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b1a6edd5735989ec934"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02fe0cbef064f18008462d29ef",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b1a6edd5735989ec935"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851fe0cbef064f18008462d29ef",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b1a6edd5735989ec936"
+      }
+    }
+  ],
+  "name": "Từng Ngày Như Mãi Mãi",
+  "release_date": "2024-12-12",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:2DCbDdIBNRxx0SxLtgyd4D",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9836"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b3f1a686884f5dbe815"
+  },
+  "album_type": "album",
+  "total_tracks": 7,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/5gJWGda6dlu4SE5oXaobv6"
+  },
+  "href": "https://api.spotify.com/v1/albums/5gJWGda6dlu4SE5oXaobv6",
+  "id": "5gJWGda6dlu4SE5oXaobv6",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273589dfa73bd8ac0f8ad7305ca",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b3f1a686884f5dbe816"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02589dfa73bd8ac0f8ad7305ca",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b3f1a686884f5dbe817"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851589dfa73bd8ac0f8ad7305ca",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b3f1a686884f5dbe818"
+      }
+    }
+  ],
+  "name": "dreaAMEE (acoustic version)",
+  "release_date": "2020-12-16",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:5gJWGda6dlu4SE5oXaobv6",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb983a"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b5626acfd8b8b868c7e"
+  },
+  "album_type": "album",
+  "total_tracks": 11,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/40Z8f0FLhVboUdBqnlHiJp"
+  },
+  "href": "https://api.spotify.com/v1/albums/40Z8f0FLhVboUdBqnlHiJp",
+  "id": "40Z8f0FLhVboUdBqnlHiJp",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273717a3ab9f13251e206c65d80",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b5626acfd8b8b868c7f"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02717a3ab9f13251e206c65d80",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b5626acfd8b8b868c80"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851717a3ab9f13251e206c65d80",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b5626acfd8b8b868c81"
+      }
+    }
+  ],
+  "name": "22",
+  "release_date": "2022-08-18",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:40Z8f0FLhVboUdBqnlHiJp",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb983e"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b71b4d744724a2fdb74"
+  },
+  "album_type": "album",
+  "total_tracks": 11,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/2EHFtvHVxsob0jAn7tXS6o"
+  },
+  "href": "https://api.spotify.com/v1/albums/2EHFtvHVxsob0jAn7tXS6o",
+  "id": "2EHFtvHVxsob0jAn7tXS6o",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273a17404597ce43b116d0456bf",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b71b4d744724a2fdb75"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02a17404597ce43b116d0456bf",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b71b4d744724a2fdb76"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851a17404597ce43b116d0456bf",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b71b4d744724a2fdb77"
+      }
+    }
+  ],
+  "name": "ái (live at GENfest 23)",
+  "release_date": "2024-04-26",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:2EHFtvHVxsob0jAn7tXS6o",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9842"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b8562a6317a702d558e"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/1Eyf1OO3fJJ1p7fhPImgOj"
+  },
+  "href": "https://api.spotify.com/v1/albums/1Eyf1OO3fJJ1p7fhPImgOj",
+  "id": "1Eyf1OO3fJJ1p7fhPImgOj",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2736f0c5023fff092a4e8ab992d",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b8562a6317a702d558f"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e026f0c5023fff092a4e8ab992d",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b8562a6317a702d5590"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048516f0c5023fff092a4e8ab992d",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b8562a6317a702d5591"
+      }
+    }
+  ],
+  "name": "6262",
+  "release_date": "2024-11-13",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:1Eyf1OO3fJJ1p7fhPImgOj",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9846"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2b9ec39cf66bee7ee92c"
+  },
+  "album_type": "single",
+  "total_tracks": 1,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/2YoV9no5vrsM462N8ffVmy"
+  },
+  "href": "https://api.spotify.com/v1/albums/2YoV9no5vrsM462N8ffVmy",
+  "id": "2YoV9no5vrsM462N8ffVmy",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b27365326c64d58b42f7dd39ecfe",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2b9ec39cf66bee7ee92d"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e0265326c64d58b42f7dd39ecfe",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2b9ec39cf66bee7ee92e"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000485165326c64d58b42f7dd39ecfe",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2b9ec39cf66bee7ee92f"
+      }
+    }
+  ],
+  "name": "Về Nhà Ăn Tết 2",
+  "release_date": "2024-01-31",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:2YoV9no5vrsM462N8ffVmy",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb984a"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2bec06a4766241642e52"
+  },
+  "album_type": "album",
+  "total_tracks": 11,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/7iMi0ZINsv5gWAIgI9CMcc"
+  },
+  "href": "https://api.spotify.com/v1/albums/7iMi0ZINsv5gWAIgI9CMcc",
+  "id": "7iMi0ZINsv5gWAIgI9CMcc",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b273c7cea67ef42fa1c8c1a87e1a",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2bec06a4766241642e53"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e02c7cea67ef42fa1c8c1a87e1a",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2bec06a4766241642e54"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00004851c7cea67ef42fa1c8c1a87e1a",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2bec06a4766241642e55"
+      }
+    }
+  ],
+  "name": "Thất tình",
+  "release_date": "2024-12-23",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:7iMi0ZINsv5gWAIgI9CMcc",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb9852"
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fd2c090b270a3b7ddca66d"
+  },
+  "album_type": "album",
+  "total_tracks": 8,
+  "external_urls": {
+    "spotify": "https://open.spotify.com/album/2UZre9rniPNke0bwRs1SMf"
+  },
+  "href": "https://api.spotify.com/v1/albums/2UZre9rniPNke0bwRs1SMf",
+  "id": "2UZre9rniPNke0bwRs1SMf",
+  "images": [
+    {
+      "url": "https://i.scdn.co/image/ab67616d0000b2738a0966b80365345d1a56a20a",
+      "height": 640,
+      "width": 640,
+      "_id": {
+        "$oid": "67fd2c090b270a3b7ddca66e"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d00001e028a0966b80365345d1a56a20a",
+      "height": 300,
+      "width": 300,
+      "_id": {
+        "$oid": "67fd2c090b270a3b7ddca66f"
+      }
+    },
+    {
+      "url": "https://i.scdn.co/image/ab67616d000048518a0966b80365345d1a56a20a",
+      "height": 64,
+      "width": 64,
+      "_id": {
+        "$oid": "67fd2c090b270a3b7ddca670"
+      }
+    }
+  ],
+  "name": "Sky Tour (Original Motion Picture Soundtrack)",
+  "release_date": "2020-06-12",
+  "release_date_precision": "day",
+  "type": "album",
+  "uri": "spotify:album:2UZre9rniPNke0bwRs1SMf",
+  "genres": [],
+  "artists": [
+    {
+      "$oid": "67fd23a384ff6e45f6eb985a"
+    }
+  ],
+  "__v": 0
+}]
