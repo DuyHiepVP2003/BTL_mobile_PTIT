@@ -23,7 +23,11 @@ export default function CustomTabList({
           onPress={onPress}
         >
           <Image
-            source={require("@/assets/images/playlist.png")}
+            source={
+              item?.imageUrl
+                ? { uri: item?.imageUrl }
+                : require("@/assets/images/playlist.png")
+            }
             style={tw.style("w-[55px] h-[55px] rounded-md mr-3")}
             resizeMode="cover"
           />
