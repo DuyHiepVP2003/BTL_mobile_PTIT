@@ -6,12 +6,14 @@ type CustomTabListProps = {
   data: any;
   imageCircle?: boolean;
   onPress?: boolean;
+  isSong?: boolean;
 };
 
 export default function CustomTabList({
   data,
   imageCircle,
   onPress,
+  isSong,
 }: CustomTabListProps) {
   const router = useRouter();
   return (
@@ -23,7 +25,11 @@ export default function CustomTabList({
             "flex-row items-center bg-[#F3E8FF] rounded-xl mb-[18px]"
           )}
           onPress={
-            onPress ? () => router.navigate(`/singer/${item.id}`) : undefined
+            onPress
+              ? isSong
+                ? () => router.navigate(`/song/${item.id}`)
+                : () => router.navigate(`/singer/${item.id}`)
+              : undefined
           }
         >
           <Image
