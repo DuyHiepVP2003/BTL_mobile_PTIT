@@ -1,30 +1,157 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
 import Svg, { Path, Circle, Line, Text as SvgText, Rect } from 'react-native-svg';
+import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
 
 const screenWidth = Dimensions.get('window').width;
+
+// API key for WeatherAPI.com
+const API_KEY = "9a0e68b9dc00409597822254250303";
+
+// Interface cho dữ liệu gió theo giờ
+interface HourlyWindData {
+  hour: number;
+  value: number;
+}
 
 export default function WindDetailsScreen() {
   const router = useRouter();
   
-  // Mock hourly wind data
-  const hourlyData = [
-    { hour: 0, value: 5 },
-    { hour: 3, value: 7 },
-    { hour: 6, value: 8 },
-    { hour: 9, value: 9 },
-    { hour: 12, value: 10 },
-    { hour: 15, value: 14 },
-    { hour: 18, value: 16 },
-    { hour: 21, value: 12 },
-    { hour: 24, value: 10 },
-  ];
+  // State for real-time data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentWind, setCurrentWind] = useState(0);
+  const [windDirection, setWindDirection] = useState('');
+  const [location, setLocation] = useState('Đang tải...');
+  const [hourlyData, setHourlyData] = useState<HourlyWindData[]>([]);
+  const [windSummary, setWindSummary] = useState('');
+  const [currentHour, setCurrentHour] = useState(0);
+  
+  // Fetch weather data on component mount
+  useEffect(() => {
+    fetchWindData();
+  }, []);
+  
+  // Function to fetch wind data from API
+  const fetchWindData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current location
+      const locationResult = await getCurrentLocation();
+      const locationQuery = locationResult 
+        ? `${locationResult.latitude},${locationResult.longitude}` 
+        : 'Hanoi';
+      
+      // Fetch weather data from API
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${locationQuery}&days=1&aqi=no&alerts=no&lang=vi`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Không thể tải dữ liệu thời tiết');
+      }
+      
+      const data = await response.json();
+      
+      // Set location name
+      setLocation(`${data.location.name}, ${data.location.country}`);
+      
+      // Set current wind data
+      setCurrentWind(Math.round(data.current.wind_kph));
+      setWindDirection(data.current.wind_dir);
+      
+      // Get current hour
+      const now = new Date();
+      const currentHourValue = now.getHours();
+      setCurrentHour(currentHourValue);
+      
+      // Process hourly wind data
+      const processedHourlyData = data.forecast.forecastday[0].hour.map(hourData => {
+        const hourTime = new Date(hourData.time).getHours();
+        return {
+          hour: hourTime,
+          value: Math.round(hourData.wind_kph)
+        };
+      });
+      
+      setHourlyData(processedHourlyData);
+      
+      // Create wind summary
+      const minWind = Math.min(...processedHourlyData.map(item => item.value));
+      const maxWind = Math.max(...processedHourlyData.map(item => item.value));
+      
+      setWindSummary(
+        `Gió hiện tại đang thổi với tốc độ ${Math.round(data.current.wind_kph)} km/h từ hướng ${getWindDirectionInVietnamese(data.current.wind_dir)}. Hôm nay, tốc độ gió dao động từ ${minWind} đến ${maxWind} km/h.`
+      );
+      
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching wind data:', err);
+      setError('Không thể tải dữ liệu gió. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Get current location
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        console.log('Location permission denied');
+        return null;
+      }
+      
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } catch (err) {
+      console.error('Error getting location:', err);
+      return null;
+    }
+  };
+  
+  // Convert wind direction to Vietnamese
+  const getWindDirectionInVietnamese = (direction: string) => {
+    const directions: Record<string, string> = {
+      'N': 'bắc',
+      'NNE': 'bắc đông bắc',
+      'NE': 'đông bắc',
+      'ENE': 'đông đông bắc',
+      'E': 'đông',
+      'ESE': 'đông đông nam',
+      'SE': 'đông nam',
+      'SSE': 'nam đông nam',
+      'S': 'nam',
+      'SSW': 'nam tây nam',
+      'SW': 'tây nam',
+      'WSW': 'tây tây nam',
+      'W': 'tây',
+      'WNW': 'tây tây bắc',
+      'NW': 'tây bắc',
+      'NNW': 'bắc tây bắc'
+    };
+    
+    return directions[direction] || direction;
+  };
 
   // Render custom wind chart
   const renderWindChart = () => {
+    if (hourlyData.length === 0) {
+      return null;
+    }
+    
     const chartWidth = screenWidth - 90;
     const chartHeight = 180;
     const paddingHorizontal = 10;
@@ -74,9 +201,12 @@ export default function WindDetailsScreen() {
       );
     });
     
-    // Current time marker (assuming 16 is current)
-    const currentHour = 16;
+    // Current time marker
     const currentX = paddingHorizontal + (currentHour * (graphWidth / 24));
+    
+    // Find current wind value
+    const currentPoint = hourlyData.find(item => item.hour === currentHour) || { value: 0 };
+    const currentY = paddingVertical + graphHeight - (currentPoint.value / maxValue * graphHeight);
     
     return (
       <View style={{ marginVertical: 10 }}>
@@ -116,7 +246,7 @@ export default function WindDetailsScreen() {
           {/* Current point */}
           <Circle
             cx={currentX}
-            cy={paddingVertical + graphHeight - (16 / maxValue * graphHeight)}
+            cy={currentY}
             r="6"
             fill="#6a3093"
             stroke="#fff"
@@ -143,20 +273,20 @@ export default function WindDetailsScreen() {
           {/* Value label for current point */}
           <Circle
             cx={currentX}
-            cy={paddingVertical + graphHeight - (16 / maxValue * graphHeight)}
+            cy={currentY}
             r="16"
             fill="#f0f0f0"
             opacity="0.8"
           />
           <SvgText
             x={currentX}
-            y={paddingVertical + graphHeight - (16 / maxValue * graphHeight) + 4}
+            y={currentY + 4}
             fontSize="12"
             fill="#333"
             fontWeight="bold"
             textAnchor="middle"
           >
-            16
+            {currentPoint.value}
           </SvgText>
         </Svg>
         
@@ -164,6 +294,38 @@ export default function WindDetailsScreen() {
       </View>
     );
   };
+
+  // Show loading indicator
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <ActivityIndicator size="large" color="#6a3093" />
+        <Text style={styles.loadingText}>Đang tải dữ liệu gió...</Text>
+      </LinearGradient>
+    );
+  }
+
+  // Show error message
+  if (error) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.errorContainer]}
+      >
+        <Ionicons name="cloud-offline" size={60} color="#6a3093" />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={fetchWindData}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -176,9 +338,9 @@ export default function WindDetailsScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Hà Nội, Việt Nam</Text>
-          <TouchableOpacity>
-            <Ionicons name="search" size={24} color="#333" />
+          <Text style={styles.headerTitle}>{location}</Text>
+          <TouchableOpacity onPress={fetchWindData}>
+            <Ionicons name="refresh" size={24} color="#333" />
           </TouchableOpacity>
         </View>
 
@@ -190,7 +352,7 @@ export default function WindDetailsScreen() {
           </View>
 
           <View style={styles.mainInfo}>
-            <Text style={styles.infoValue}>16km/h</Text>
+            <Text style={styles.infoValue}>{currentWind}km/h</Text>
             <View style={styles.weatherIcon}>
               <Ionicons name="partly-sunny" size={60} color="#FFD700" />
             </View>
@@ -227,7 +389,7 @@ export default function WindDetailsScreen() {
           </View>
           
           <Text style={styles.summaryText}>
-            Gió hiện tại đang thổi với tốc độ 16 km/h từ hướng đông nam. Hôm nay, tốc độ gió dao động từ 5 đến 16 km/h.
+            {windSummary}
           </Text>
         </View>
       </ScrollView>
@@ -240,6 +402,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f0e6ff',
     paddingTop: 32,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#6a3093',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   header: {
     flexDirection: 'row',

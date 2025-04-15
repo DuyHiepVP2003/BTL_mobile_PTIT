@@ -1,17 +1,24 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
 import Svg, { Path, Circle, Line, Text as SvgText, Rect } from 'react-native-svg';
+import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
 
 const screenWidth = Dimensions.get('window').width;
+const API_KEY = "9a0e68b9dc00409597822254250303"; // API key for WeatherAPI.com
 
 export default function UVDetailsScreen() {
   const router = useRouter();
   
-  // Mock hourly UV data
-  const hourlyData = [
+  // State for real-time data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentUV, setCurrentUV] = useState(7);
+  const [location, setLocation] = useState('Hà Nội, Việt Nam');
+  const [hourlyData, setHourlyData] = useState([
     { hour: 0, value: 0 },
     { hour: 3, value: 0 },
     { hour: 6, value: 2 },
@@ -21,7 +28,9 @@ export default function UVDetailsScreen() {
     { hour: 18, value: 3 },
     { hour: 21, value: 0 },
     { hour: 24, value: 0 },
-  ];
+  ]);
+  const [currentHour, setCurrentHour] = useState(15);
+  const [maxUV, setMaxUV] = useState({ value: 8, hour: 12 });
 
   // UV index descriptions
   const uvLevels = [
@@ -32,8 +41,7 @@ export default function UVDetailsScreen() {
     { level: "Cực kỳ cao", range: "11+", color: "#9A1AB2", description: "Tránh ra ngoài" }
   ];
 
-  // Current UV index
-  const currentUV = 7;
+  // Get current UV level
   const currentUVLevel = uvLevels.find(level => {
     const [min, max] = level.range.split('-');
     if (max.includes('+')) {
@@ -41,6 +49,120 @@ export default function UVDetailsScreen() {
     }
     return currentUV >= parseInt(min) && currentUV <= parseInt(max);
   });
+
+  // Fetch weather data on component mount
+  useEffect(() => {
+    fetchUVData();
+  }, []);
+  
+  // Function to fetch UV data from API
+  const fetchUVData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current location
+      const locationResult = await getCurrentLocation();
+      const locationQuery = locationResult 
+        ? `${locationResult.latitude},${locationResult.longitude}` 
+        : 'Hanoi';
+      
+      // Fetch weather data from API
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${locationQuery}&days=1&aqi=no&alerts=no&lang=vi`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Không thể tải dữ liệu thời tiết');
+      }
+      
+      const data = await response.json();
+      console.log("API Response:", JSON.stringify(data, null, 2));
+      
+      // Set location name
+      setLocation(`${data.location.name}, ${data.location.country}`);
+      
+      // Set current UV data
+      setCurrentUV(data.current.uv);
+      
+      // Process hourly UV data
+      const now = new Date();
+      const currentHour = now.getHours();
+      setCurrentHour(currentHour);
+      
+      // Get hourly data from API
+      const processedHourlyData = [];
+      
+      // Create data points for every 3 hours
+      for (let hour = 0; hour <= 24; hour += 3) {
+        let uvValue = 0;
+        
+        if (hour === 24) {
+          // For hour 24, use the first hour of next day
+          uvValue = 0; // Usually UV is 0 at midnight
+        } else {
+          // Find the closest hour in the API data
+          const hourData = data.forecast.forecastday[0].hour.find(
+            (h: any) => new Date(h.time).getHours() === hour
+          );
+          
+          if (hourData) {
+            uvValue = hourData.uv;
+          }
+        }
+        
+        processedHourlyData.push({
+          hour: hour,
+          value: uvValue
+        });
+      }
+      
+      setHourlyData(processedHourlyData);
+      
+      // Find max UV for the day
+      const uvValues = data.forecast.forecastday[0].hour.map((hour: any) => ({
+        value: hour.uv,
+        hour: new Date(hour.time).getHours()
+      }));
+      
+      const maxUVData = uvValues.reduce((max: any, current: any) => 
+        current.value > max.value ? current : max, 
+        { value: 0, hour: 0 }
+      );
+      
+      setMaxUV(maxUVData);
+      
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching UV data:', err);
+      setError('Không thể tải dữ liệu UV. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get current location
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        console.log('Location permission denied');
+        return null;
+      }
+      
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } catch (err) {
+      console.error('Error getting location:', err);
+      return null;
+    }
+  };
 
   // Render custom UV chart
   const renderUVChart = () => {
@@ -93,8 +215,7 @@ export default function UVDetailsScreen() {
       );
     });
     
-    // Current time marker (assuming 15 is current)
-    const currentHour = 15;
+    // Current time marker
     const currentX = paddingHorizontal + (currentHour * (graphWidth / 24));
     const currentY = paddingVertical + graphHeight - (currentUV / maxValue * graphHeight);
     
@@ -185,6 +306,38 @@ export default function UVDetailsScreen() {
     );
   };
 
+  // Show loading indicator
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <ActivityIndicator size="large" color="#6a3093" />
+        <Text style={styles.loadingText}>Đang tải dữ liệu UV...</Text>
+      </LinearGradient>
+    );
+  }
+
+  // Show error message
+  if (error) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.errorContainer]}
+      >
+        <Ionicons name="cloud-offline" size={60} color="#6a3093" />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={fetchUVData}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
+
   return (
     <LinearGradient
       colors={['#e0c3ff', '#d9c2ff']}
@@ -196,9 +349,9 @@ export default function UVDetailsScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Hà Nội, Việt Nam</Text>
-          <TouchableOpacity>
-            <Ionicons name="search" size={24} color="#333" />
+          <Text style={styles.headerTitle}>{location}</Text>
+          <TouchableOpacity onPress={fetchUVData} style={styles.refreshButton}>
+            <Ionicons name="refresh" size={24} color="#333" />
           </TouchableOpacity>
         </View>
 
@@ -252,8 +405,8 @@ export default function UVDetailsScreen() {
           </View>
           
           <Text style={styles.summaryText}>
-            Chỉ số UV hiện tại là {currentUV}, ở mức {currentUVLevel?.level}. {currentUVLevel?.description}. 
-            Chỉ số UV cao nhất trong ngày là 8, dự kiến vào khoảng 12 giờ trưa.
+            Chỉ số UV hiện tại là <Text style={styles.highlightText}>{currentUV}</Text>, ở mức <Text style={styles.highlightText}>{currentUVLevel?.level}</Text>. {currentUVLevel?.description}. 
+            Chỉ số UV cao nhất trong ngày là <Text style={styles.highlightText}>{maxUV.value}</Text>, dự kiến vào khoảng <Text style={styles.highlightText}>{maxUV.hour} giờ</Text>.
           </Text>
         </View>
         
@@ -285,6 +438,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0e6ff',
     paddingTop: 32,
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#6a3093',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -295,6 +479,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+  },
+  refreshButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
   },
   headerTitle: {
     fontSize: 18,
@@ -423,5 +614,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: '#333',
+  },
+  highlightText: {
+    color: '#6a3093',
+    fontWeight: 'bold',
   },
 });

@@ -1,18 +1,25 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Dimensions } from 'react-native';
 import Svg, { Path, Circle, Line, Text as SvgText, Rect, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
+import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
 
 const screenWidth = Dimensions.get('window').width;
 type colorArr = [string, string];
+const API_KEY = "9a0e68b9dc00409597822254250303"; // API key for WeatherAPI.com
 
 export default function RainDetailsScreen() {
   const router = useRouter();
   
-  // Mock hourly rain chance data
-  const hourlyData = [
+  // State for real-time data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentRainChance, setCurrentRainChance] = useState(24);
+  const [location, setLocation] = useState('Hà Nội, Việt Nam');
+  const [hourlyData, setHourlyData] = useState([
     { hour: 7, value: 27 },
     { hour: 8, value: 44 },
     { hour: 9, value: 56 },
@@ -21,7 +28,111 @@ export default function RainDetailsScreen() {
     { hour: 12, value: 50 },
     { hour: 13, value: 30 },
     { hour: 14, value: 20 },
-  ];
+  ]);
+  const [currentHour, setCurrentHour] = useState(10);
+  const [rainRange, setRainRange] = useState({ min: 27, max: 88, peakHour: 10 });
+  
+  // Fetch weather data on component mount
+  useEffect(() => {
+    fetchRainData();
+  }, []);
+  
+  // Function to fetch rain data from API
+  const fetchRainData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get current location
+      const locationResult = await getCurrentLocation();
+      const locationQuery = locationResult 
+        ? `${locationResult.latitude},${locationResult.longitude}` 
+        : 'Hanoi';
+      
+      // Fetch weather data from API
+      const response = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${locationQuery}&days=1&aqi=no&alerts=no&lang=vi`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Không thể tải dữ liệu thời tiết');
+      }
+      
+      const data = await response.json();
+      console.log("API Response:", JSON.stringify(data, null, 2));
+      
+      // Set location name
+      setLocation(`${data.location.name}, ${data.location.country}`);
+      
+      // Set current rain chance data
+      setCurrentRainChance(data.current.precip_mm > 0 ? 
+        Math.round(data.forecast.forecastday[0].hour[new Date().getHours()].chance_of_rain) : 
+        Math.round(data.forecast.forecastday[0].day.daily_chance_of_rain));
+      
+      // Process hourly rain data
+      const now = new Date();
+      const currentHour = now.getHours();
+      setCurrentHour(currentHour);
+      
+      // Get hourly data from API - get current hour and next 7 hours
+      const hourlyForecast = data.forecast.forecastday[0].hour;
+      const processedHourlyData = [];
+      
+      for (let i = 0; i < 8; i++) {
+        const hourIndex = (currentHour + i) % 24;
+        const hourData = hourlyForecast[hourIndex];
+        if (hourData) {
+          processedHourlyData.push({
+            hour: hourIndex,
+            value: hourData.chance_of_rain
+          });
+        }
+      }
+      
+      setHourlyData(processedHourlyData);
+      
+      // Calculate rain chance range for the day
+      const rainValues = hourlyForecast.map((hour: any) => hour.chance_of_rain);
+      const minRain = Math.min(...rainValues);
+      const maxRain = Math.max(...rainValues);
+      
+      // Find peak hour
+      const peakHourIndex = rainValues.indexOf(maxRain);
+      const peakHour = peakHourIndex >= 0 ? peakHourIndex : currentHour;
+      
+      setRainRange({ min: minRain, max: maxRain, peakHour: peakHour });
+      
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching rain data:', err);
+      setError('Không thể tải dữ liệu mưa. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get current location
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        console.log('Location permission denied');
+        return null;
+      }
+      
+      const position = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } catch (err) {
+      console.error('Error getting location:', err);
+      return null;
+    }
+  };
 
   // Render rain chance bars
   const renderRainChanceBars = () => {
@@ -73,7 +184,7 @@ export default function RainDetailsScreen() {
     let pathData = '';
     let areaPathData = '';
     const points = hourlyData.map((item, index) => {
-      const x = paddingHorizontal + ((item.hour - 7) * (graphWidth / (hourlyData.length - 1)));
+      const x = paddingHorizontal + (index * (graphWidth / (hourlyData.length - 1)));
       // Invert Y coordinate (SVG 0,0 is top-left)
       const y = paddingVertical + graphHeight - (item.value / maxValue * graphHeight);
       if (index === 0) {
@@ -82,7 +193,7 @@ export default function RainDetailsScreen() {
       } else {
         // Use bezier curves for smoother lines
         const prevPoint = hourlyData[index - 1];
-        const prevX = paddingHorizontal + ((prevPoint.hour - 7) * (graphWidth / (hourlyData.length - 1)));
+        const prevX = paddingHorizontal + ((index - 1) * (graphWidth / (hourlyData.length - 1)));
         const prevY = paddingVertical + graphHeight - (prevPoint.value / maxValue * graphHeight);
         
         const cpX1 = prevX + (x - prevX) / 2;
@@ -95,7 +206,7 @@ export default function RainDetailsScreen() {
     });
     
     // Close the area path
-    const lastX = paddingHorizontal + ((hourlyData[hourlyData.length - 1].hour - 7) * (graphWidth / (hourlyData.length - 1)));
+    const lastX = paddingHorizontal + ((hourlyData.length - 1) * (graphWidth / (hourlyData.length - 1)));
     areaPathData += ` L ${lastX} ${paddingVertical + graphHeight} Z`;
     
     // Draw horizontal grid lines
@@ -115,11 +226,11 @@ export default function RainDetailsScreen() {
       );
     });
     
-    // Current time marker (assuming 10 PM is current)
-    const currentHour = 10;
+    // Current time marker
     const currentHourIndex = hourlyData.findIndex(item => item.hour === currentHour);
-    const currentX = paddingHorizontal + ((currentHour - 7) * (graphWidth / (hourlyData.length - 1)));
-    const currentY = paddingVertical + graphHeight - (hourlyData[currentHourIndex].value / maxValue * graphHeight);
+    const currentIndex = currentHourIndex >= 0 ? currentHourIndex : 0;
+    const currentX = paddingHorizontal + (currentIndex * (graphWidth / (hourlyData.length - 1)));
+    const currentY = paddingVertical + graphHeight - (hourlyData[currentIndex].value / maxValue * graphHeight);
     
     return (
       <View style={{ marginVertical: 10 }}>
@@ -176,7 +287,7 @@ export default function RainDetailsScreen() {
           
           {/* Data points */}
           {hourlyData.map((item, index) => {
-            const x = paddingHorizontal + ((item.hour - 7) * (graphWidth / (hourlyData.length - 1)));
+            const x = paddingHorizontal + (index * (graphWidth / (hourlyData.length - 1)));
             const y = paddingVertical + graphHeight - (item.value / maxValue * graphHeight);
             return (
               <Circle
@@ -203,7 +314,7 @@ export default function RainDetailsScreen() {
           
           {/* Hour labels */}
           {hourlyData.map((item, index) => {
-            const x = paddingHorizontal + ((item.hour - 7) * (graphWidth / (hourlyData.length - 1)));
+            const x = paddingHorizontal + (index * (graphWidth / (hourlyData.length - 1)));
             return (
               <SvgText
                 key={index}
@@ -234,7 +345,7 @@ export default function RainDetailsScreen() {
             fontWeight="bold"
             textAnchor="middle"
           >
-            {hourlyData[currentHourIndex].value}%
+            {hourlyData[currentIndex].value}%
           </SvgText>
         </Svg>
         
@@ -242,6 +353,38 @@ export default function RainDetailsScreen() {
       </View>
     );
   };
+
+  // Show loading indicator
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.loadingContainer]}
+      >
+        <ActivityIndicator size="large" color="#6a3093" />
+        <Text style={styles.loadingText}>Đang tải dữ liệu mưa...</Text>
+      </LinearGradient>
+    );
+  }
+
+  // Show error message
+  if (error) {
+    return (
+      <LinearGradient
+        colors={['#e0c3ff', '#d9c2ff']}
+        style={[styles.container, styles.errorContainer]}
+      >
+        <Ionicons name="cloud-offline" size={60} color="#6a3093" />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={fetchRainData}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -254,6 +397,10 @@ export default function RainDetailsScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
+          <Text style={styles.headerTitle}>{location}</Text>
+          <TouchableOpacity onPress={fetchRainData} style={styles.refreshButton}>
+            <Ionicons name="refresh" size={24} color="#333" />
+          </TouchableOpacity>
         </View>
 
         {/* Current rain chance - Organized in a clear block */}
@@ -264,7 +411,7 @@ export default function RainDetailsScreen() {
           </View>
 
           <View style={styles.mainInfo}>
-            <Text style={styles.infoValue}>24<Text style={styles.percentSymbol}>%</Text></Text>
+            <Text style={styles.infoValue}>{currentRainChance}<Text style={styles.percentSymbol}>%</Text></Text>
             <View style={styles.rainIconContainer}>
               <MaterialCommunityIcons name="weather-rainy" size={60} color="#6a3093" />
               <View style={styles.rainDrops}>
@@ -329,8 +476,8 @@ export default function RainDetailsScreen() {
           <View style={styles.summaryContainer}>
             <MaterialCommunityIcons name="information-outline" size={24} color="#6a3093" style={styles.summaryIcon} />
             <Text style={styles.summaryText}>
-              Khả năng mưa hiện tại là <Text style={styles.highlightText}>24%</Text>. Hôm nay, khả năng mưa dao động từ <Text style={styles.highlightText}>27%</Text> đến <Text style={styles.highlightText}>88%</Text>.
-              Cao điểm mưa dự kiến vào khoảng <Text style={styles.highlightText}>10 PM</Text> với xác suất <Text style={styles.highlightText}>88%</Text>.
+              Khả năng mưa hiện tại là <Text style={styles.highlightText}>{currentRainChance}%</Text>. Hôm nay, khả năng mưa dao động từ <Text style={styles.highlightText}>{rainRange.min}%</Text> đến <Text style={styles.highlightText}>{rainRange.max}%</Text>.
+              Cao điểm mưa dự kiến vào khoảng <Text style={styles.highlightText}>{rainRange.peakHour} {rainRange.peakHour >= 12 ? 'PM' : 'AM'}</Text> với xác suất <Text style={styles.highlightText}>{rainRange.max}%</Text>.
             </Text>
           </View>
         </View>
@@ -345,14 +492,51 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0e6ff',
     paddingTop: 32,
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+  },
+  errorContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6a3093',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#6a3093',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 15,
   },
   backButton: {
+    padding: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+  },
+  refreshButton: {
     padding: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     borderRadius: 20,
