@@ -1,14 +1,16 @@
 import CustomTabList from "@/components/music-recomment/CustomTabList";
-import useAlbums from "@/hooks/useAlbums";
+import { useAlbums } from "@/hooks/useAlbums";
 import { useArtistDetail } from "@/hooks/useArtist";
 import { useRoute } from "@react-navigation/native";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, Pressable } from "react-native";
 import Slider from "@react-native-community/slider";
 
 import tw from "twrnc";
 import { useTrackDetail } from "@/hooks/useTracks";
+import { useRouter } from "expo-router";
 export default function TabTwoScreen() {
   const route = useRoute();
+  const router = useRouter();
   const { songId } = route.params as { songId: string };
   const { albums } = useAlbums();
   const { track } = useTrackDetail(songId);
@@ -80,7 +82,8 @@ export default function TabTwoScreen() {
       >
         <Text style={tw`text-[#222222] text-[16px] mb-[20px]`}>Albums</Text>
         {albums.map((item: any, index: number) => (
-          <View
+          <Pressable
+            onPress={() => router.navigate(`/album/${item._id}`)}
             key={index}
             style={tw.style("flex-row items-cente rounded-xl mb-[18px]")}
           >
@@ -90,12 +93,12 @@ export default function TabTwoScreen() {
               resizeMode="cover"
             />
             <View style={tw.style("flex-1")}>
-              <Text style={tw.style("text-[14px] font-bold")}>{item.name}</Text>
+              <Text style={tw.style("text-[14px] font-bold")}>{item?.name}</Text>
               <Text style={tw.style("text-[12px] text-gray-500")}>
                 {item?.release_date}
               </Text>
             </View>
-          </View>
+          </Pressable>
         ))}
       </View>
     </ScrollView>

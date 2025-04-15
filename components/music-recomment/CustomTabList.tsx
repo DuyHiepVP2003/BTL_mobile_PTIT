@@ -7,6 +7,7 @@ type CustomTabListProps = {
   imageCircle?: boolean;
   onPress?: boolean;
   isSong?: boolean;
+  isAlbum?: boolean;
 };
 
 export default function CustomTabList({
@@ -14,6 +15,7 @@ export default function CustomTabList({
   imageCircle,
   onPress,
   isSong,
+  isAlbum,
 }: CustomTabListProps) {
   const router = useRouter();
   return (
@@ -28,6 +30,8 @@ export default function CustomTabList({
             onPress
               ? isSong
                 ? () => router.navigate(`/song/${item.id}`)
+                : isAlbum
+                ? () => router.navigate(`/album/${item.id}`)
                 : () => router.navigate(`/singer/${item.id}`)
               : undefined
           }
