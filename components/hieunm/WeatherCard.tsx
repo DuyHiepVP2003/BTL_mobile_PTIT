@@ -2,22 +2,30 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
-  Platform
+  Platform,
+  ActivityIndicator,
+  AppState,
+  AppStateStatus
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { BlurView } from 'expo-blur'
 import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {
+  OpenWeatherMapService,
+  WeatherData
+} from '@/services/api/openWeatherMapService'
 
 export const WeatherCard = () => {
   type IoniconsName = React.ComponentProps<typeof Ionicons>['name']
   const router = useRouter()
-
-  // This would come from your API in the future
-  const weatherData = {
+  const [loading, setLoading] = useState(true)
+  const [weatherData, setWeatherData] = useState<WeatherData>({
     location: 'Ha Noi, Viet Nam',
+    country: 'Việt Nam',
     temperature: 3,
     condition: 'Có mây', // Cloudy
     date: '08/03/2025, 16:14',
@@ -26,38 +34,190 @@ export const WeatherCard = () => {
     humidity: 78,
     windSpeed: 12,
     feelsLike: 1
+  })
+  const [error, setError] = useState<string | null>(null)
+  const [lastFetchTime, setLastFetchTime] = useState<number>(0)
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    )
+    return () => subscription.remove()
+  }, [])
+
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
+    if (nextAppState === 'active') {
+      checkAndUpdateWeatherIfNeeded()
+    }
   }
 
-  // Function to determine which icon to display based on weather condition
-  const getWeatherIcon = (condition: string) => {
+  const checkAndUpdateWeatherIfNeeded = async () => {
+    const now = Date.now()
+    const THIRTY_MINUTES = 60 * 1000
+
+    if (now - lastFetchTime > THIRTY_MINUTES) {
+      fetchWeatherData()
+    }
+  }
+
+  const fetchWeatherData = async () => {
+    try {
+      setLoading(true)
+
+      const savedCity = (await AsyncStorage.getItem('lastCity')) || 'Hanoi,vn'
+
+      const weatherService = new OpenWeatherMapService()
+      const data = await weatherService.getCurrentWeather(savedCity)
+
+      data.condition = weatherService.translateCondition(data.condition)
+
+      setWeatherData(data)
+      setError(null)
+      setLastFetchTime(Date.now())
+
+      await AsyncStorage.setItem('cachedWeatherData', JSON.stringify(data))
+      await AsyncStorage.setItem('lastFetchTime', Date.now().toString())
+    } catch (error) {
+      console.error('Error fetching weather data:', error)
+      setError('Không thể tải dữ liệu thời tiết')
+
+      try {
+        const cachedData = await AsyncStorage.getItem('cachedWeatherData')
+        if (cachedData) {
+          setWeatherData(JSON.parse(cachedData))
+        }
+      } catch (cacheError) {
+        // Keep using mock data if no cache is available
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const initWeatherData = async () => {
+      try {
+        const cachedData = await AsyncStorage.getItem('cachedWeatherData')
+        const lastFetch = await AsyncStorage.getItem('lastFetchTime')
+
+        if (cachedData && lastFetch) {
+          const parsedData = JSON.parse(cachedData)
+          const lastFetchMs = parseInt(lastFetch, 10)
+          setWeatherData(parsedData)
+          setLastFetchTime(lastFetchMs)
+
+          const now = Date.now()
+          const THIRTY_MINUTES = 60 * 1000
+
+          if (now - lastFetchMs < THIRTY_MINUTES) {
+            setLoading(false)
+            return
+          }
+        }
+
+        fetchWeatherData()
+      } catch (error) {
+        console.error('Error initializing weather data:', error)
+        fetchWeatherData()
+      }
+    }
+
+    initWeatherData()
+  }, [])
+
+  const getWeatherIcon = (condition: string, conditionMain?: string) => {
+    if (conditionMain) {
+      switch (conditionMain.toLowerCase()) {
+        case 'clear':
+          return { name: 'sunny', color: '#FFD700' }
+        case 'clouds':
+          return { name: 'cloudy', color: '#E0E0E0' }
+        case 'rain':
+        case 'drizzle':
+          return { name: 'rainy', color: '#87CEFA' }
+        case 'thunderstorm':
+          return { name: 'thunderstorm', color: '#FFD700' }
+        case 'snow':
+          return { name: 'snow', color: 'white' }
+        case 'mist':
+        case 'fog':
+        case 'haze':
+          return { name: 'cloud', color: '#C0C0C0' }
+      }
+    }
+
     switch (condition.toLowerCase()) {
       case 'có mây':
       case 'cloudy':
+      case 'mây':
+      case 'ít mây':
+      case 'nhiều mây':
+      case 'mây rải rác':
+      case 'trời nhiều mây':
         return { name: 'cloudy', color: '#E0E0E0' }
       case 'có nắng':
       case 'sunny':
+      case 'nắng':
+      case 'trời nắng':
+      case 'trời quang':
         return { name: 'sunny', color: '#FFD700' }
       case 'có mưa':
       case 'rainy':
+      case 'mưa':
+      case 'mưa vừa':
+      case 'mưa nhẹ':
+      case 'mưa to':
+      case 'mưa rào':
+      case 'mưa phùn':
+      case 'moderate rain':
         return { name: 'rainy', color: '#87CEFA' }
       case 'có tuyết':
       case 'snowy':
+      case 'tuyết':
         return { name: 'snow', color: 'white' }
       case 'có sấm sét':
       case 'thunderstorm':
+      case 'sấm sét':
+      case 'giông bão':
         return { name: 'thunderstorm', color: '#FFD700' }
       case 'có sương mù':
       case 'foggy':
+      case 'sương mù':
+      case 'sương mờ':
+      case 'sương mù dày đặc':
         return { name: 'cloud', color: '#C0C0C0' }
       default:
         return { name: 'partly-sunny', color: '#FFD700' }
     }
   }
 
-  const weatherIcon = getWeatherIcon(weatherData.condition)
+  const weatherIcon = getWeatherIcon(
+    weatherData.condition,
+    (weatherData as any).conditionMain
+  )
 
   const handleSearch = () => {
     router.push('/pages/weather-search')
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.weatherCard, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Đang tải dữ liệu thời tiết...</Text>
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.weatherCard, styles.loadingContainer]}>
+        <Ionicons name="cloud-offline" size={40} color="#fff" />
+        <Text style={styles.loadingText}>{error}</Text>
+        <Text style={styles.errorSubtext}>Đang hiển thị dữ liệu mẫu</Text>
+      </View>
+    )
   }
 
   return (
@@ -66,13 +226,11 @@ export const WeatherCard = () => {
       style={styles.weatherCard}
       imageStyle={styles.backgroundImage}
     >
-      {/* Semi-transparent overlay for better text readability */}
       <LinearGradient
         colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.1)', 'rgba(0,0,0,0.4)']}
         style={styles.overlay}
       />
 
-      {/* Header with location and search */}
       <View style={styles.locationContainer}>
         <View style={styles.locationTextContainer}>
           <Ionicons
@@ -81,10 +239,11 @@ export const WeatherCard = () => {
             color="white"
             style={styles.locationIcon}
           />
-          <Text style={styles.location}>{weatherData.location}</Text>
+          <Text style={styles.location}>
+            {weatherData.location}, {weatherData.country}
+          </Text>
         </View>
 
-        {/* Enhanced search button */}
         <TouchableOpacity
           style={styles.searchButton}
           onPress={handleSearch}
@@ -102,7 +261,6 @@ export const WeatherCard = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Main temperature display */}
       <View style={styles.temperatureContainer}>
         <View style={styles.mainTempContainer}>
           <Text style={styles.temperature}>{weatherData.temperature}°</Text>
@@ -122,7 +280,10 @@ export const WeatherCard = () => {
         </View>
       </View>
 
-      {/* Additional weather info */}
+      <View>
+        <Text style={styles.date}>{weatherData.date}</Text>
+      </View>
+
       <View style={styles.additionalInfoContainer}>
         <View style={styles.infoItem}>
           <Ionicons name="water-outline" size={18} color="white" />
@@ -132,12 +293,14 @@ export const WeatherCard = () => {
           <Ionicons name="speedometer-outline" size={18} color="white" />
           <Text style={styles.infoText}>{weatherData.windSpeed} km/h</Text>
         </View>
+        {weatherData.rain !== undefined && weatherData.rain > 0 && (
+          <View style={styles.infoItem}>
+            <Ionicons name="rainy-outline" size={18} color="white" />
+            <Text style={styles.infoText}>{weatherData.rain} mm</Text>
+          </View>
+        )}
       </View>
 
-      {/* Date display */}
-      <Text style={styles.date}>{weatherData.date}</Text>
-
-      {/* Forecast */}
       <View style={styles.forecastContainer}>
         <View style={styles.forecastItem}>
           <Ionicons
@@ -176,6 +339,16 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 8
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  loadingText: {
+    color: 'white',
+    marginTop: 10,
+    fontSize: 16
+  },
   backgroundImage: {
     borderRadius: 25
   },
@@ -191,7 +364,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15
+    marginBottom: 0
   },
   locationTextContainer: {
     flexDirection: 'row',
@@ -238,8 +411,7 @@ const styles = StyleSheet.create({
   temperatureContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10
+    justifyContent: 'space-between'
   },
   mainTempContainer: {
     flexDirection: 'column'
@@ -280,11 +452,11 @@ const styles = StyleSheet.create({
   },
   additionalInfoContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginTop: 20,
+    justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     borderRadius: 15,
     padding: 10,
+    marginTop: 15,
     alignSelf: 'flex-start'
   },
   infoItem: {
@@ -300,13 +472,17 @@ const styles = StyleSheet.create({
   date: {
     color: 'white',
     fontSize: 14,
-    marginTop: 15,
+    marginTop: 10,
     opacity: 0.9,
-    fontWeight: '500'
+    fontWeight: '600',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 12,
+    textAlign: 'center',
+    padding: 5,
   },
   forecastContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 15,
     right: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 12,
@@ -325,5 +501,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'right',
     fontWeight: '500'
+  },
+  errorSubtext: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+    marginTop: 5
   }
 })
