@@ -38,7 +38,7 @@ export default function TabTwoScreen() {
   const [activeTab, setActiveTab] = useState("");
 
   return (
-    <View style={tw`bg-[#F6EDFF]`}>
+    <View style={tw`bg-[#F6EDFF] flex-1`}>
       <View style={tw`bg-[#E1D3FA] p-[18px]`}>
         <View style={tw`flex-row justify-between items-center mt-[18px]`}>
           <Text style={tw`text-[18px] leading-[28px] text-bold`}>
@@ -64,7 +64,11 @@ export default function TabTwoScreen() {
           ))}
         </View>
       </View>
-      <ScrollView style={tw`p-[18px] h-full`}>
+      <ScrollView
+        style={tw`p-[18px]`}
+        contentContainerStyle={tw`pb-[24px]`}
+        showsVerticalScrollIndicator={false}
+      >
         {activeTab === "playlist" && <Playlists />}
         {activeTab === "artist" && <Artist />}
         {activeTab === "song" && <Song />}

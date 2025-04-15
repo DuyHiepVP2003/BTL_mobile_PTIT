@@ -1,4 +1,4 @@
-import { FlatList, Image, View } from "react-native";
+import { FlatList, Image, Text, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import tw from "twrnc";
 
@@ -22,25 +22,29 @@ export default function CustomFlatList({
         <View style={tw.style("mr-[8px]")}>
           <View style={tw.style("w-full mx-auto")}>
             <Image
-              source={require("@/assets/images/playlist.png")}
+              source={{ uri: item?.image }}
               style={tw.style(
                 `w-[134px] h-[134px] ${imageCircle && "rounded-full"}`
               )}
             />
           </View>
-          <ThemedText
-            style={tw.style("text-[10px] font-bold w-full text-center")}
+          <Text
+            style={tw.style(
+              "text-[10px] max-w-[134px] font-bold w-full text-center truncate"
+            )}
           >
-            {item.name}
-          </ThemedText>
-          <ThemedText
-            style={tw.style("text-[8px] text-[#A7A7A7] w-full text-center")}
+            {item?.name}
+          </Text>
+          <Text
+            style={tw.style(
+              "text-[8px] max-w-[134px] text-[#A7A7A7] w-full text-center truncate"
+            )}
           >
-            {item.album}
-          </ThemedText>
+            {item?.album}
+          </Text>
         </View>
       )}
-      keyExtractor={(item) => String(item.id)}
+      keyExtractor={(item) => String(item?.id)}
     />
   );
 }

@@ -2,7 +2,7 @@ import { SafeAreaView, Text } from "react-native";
 import CustomTabList from "./CustomTabList";
 import tw from "twrnc";
 import { useRouter } from "expo-router";
-import useArtists from "@/hooks/useArtist";
+import { useArtists } from "@/hooks/useArtist";
 
 const Artist = () => {
   const router = useRouter();
@@ -19,7 +19,7 @@ const Artist = () => {
             imageUrl: item?.images[0]?.url,
           };
         })}
-        onPress={() => router.navigate(`/singer/123`)}
+        onPress
       />
     </SafeAreaView>
   );

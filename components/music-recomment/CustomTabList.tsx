@@ -1,10 +1,11 @@
+import { useRouter } from "expo-router";
 import { FlatList, Image, Pressable, Text, View } from "react-native";
 import tw from "twrnc";
 
 type CustomTabListProps = {
   data: any;
   imageCircle?: boolean;
-  onPress?: () => void;
+  onPress?: boolean;
 };
 
 export default function CustomTabList({
@@ -12,6 +13,7 @@ export default function CustomTabList({
   imageCircle,
   onPress,
 }: CustomTabListProps) {
+  const router = useRouter();
   return (
     <>
       {data.map((item: any, index: number) => (
@@ -20,7 +22,9 @@ export default function CustomTabList({
           style={tw.style(
             "flex-row items-center bg-[#F3E8FF] rounded-xl mb-[18px]"
           )}
-          onPress={onPress}
+          onPress={
+            onPress ? () => router.navigate(`/singer/${item.id}`) : undefined
+          }
         >
           <Image
             source={
