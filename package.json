@@ -47,7 +47,7 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "twrnc": "^4.6.1",
-    "expo-notifications": "~0.29.14"
+    "expo-notifications": "~0.29.14",
     "expo-location": "~18.0.10"
   },
   "devDependencies": {
