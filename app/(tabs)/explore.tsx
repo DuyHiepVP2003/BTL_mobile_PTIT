@@ -1,109 +1,166 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Platform, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import Header from "@/components/ducna/Header";
+import { useEffect, useState } from "react";
+import ForecastDayItem from "@/components/ducna/ForecastDayItem";
+import { Ionicons } from "@expo/vector-icons";
+import ForecastDetail from "@/components/ducna/ForecastDetail";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+const API_KEY = "7ee1943f1ded42e086784930252802";
+const BASE_URL = "http://api.weatherapi.com/v1";
+
+interface WeatherData {
+  avgTempC: number;
+  condition: string;
+  date: string;
+  icon: string;
+  maxTempC: number;
+  minTempC: number;
+}
 
 export default function TabTwoScreen() {
+  const [activeTab, setActiveTab] = useState("7 ngày tới");
+  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+
+  async function get7DayForecast(location: string) {
+    const url = `${BASE_URL}/forecast.json?key=${API_KEY}&q=${encodeURIComponent(location)}&days=7&aqi=no&alerts=no`;
+  
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+  
+      const data = await res.json();
+      const forecastDays = data.forecast.forecastday;
+  
+      const result = forecastDays.map((day: any) => ({
+        date: day.date,
+        condition: day.day.condition.text,
+        avgTempC: day.day.avgtemp_c,
+        maxTempC: day.day.maxtemp_c,
+        minTempC: day.day.mintemp_c,
+        icon: day.day.condition.icon,
+      }));
+  
+      return result;
+    } catch (error: any) {
+      console.error("Lỗi khi lấy dữ liệu thời tiết:", error.message);
+      return null;
+    }
+  }
+
+  useEffect(()=>{
+    get7DayForecast("Ha Noi").then((data) => setWeatherData(data));
+  },[])
+
+  // Function to get weather icon based on condition
+  const getWeatherIcon = (condition: string) => {
+    switch (condition.toLowerCase()) {
+      case "sunny":
+        return <Ionicons name="sunny" size={28} color="#FDB813" />;
+      case "patchy rain nearby":
+        return <Ionicons name="rainy" size={28} color="#87CEFA" />;
+      default:
+        return <Ionicons name="partly-sunny" size={28} color="#FDB813" />;
+    }
+  };
+
+  const translateCondition = (condition: string) => {
+    const conditionMap: { [key: string]: string } = {
+      "sunny": "Có nắng",
+      "partly cloudy": "Có mây và nắng",
+      "cloudy": "Có mây",
+      "overcast": "Nhiều mây",
+      "mist": "Sương mù",
+      "patchy rain nearby": "Có mưa rải rác",
+      "light rain": "Mưa nhẹ",
+      "moderate rain": "Mưa vừa",
+      "heavy rain": "Mưa to",
+      "thunderstorm": "Có giông",
+      "snow": "Có tuyết",
+      "fog": "Sương mù",
+      "clear": "Trời quang",
+    };
+
+    return conditionMap[condition.toLowerCase()] || condition;
+  };
+
+  // Format date to Vietnamese format
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    return `${day}/${month}`;
+  };
+
+  // Get day name in Vietnamese
+  const getDayName = (dateString: string) => {
+    const date = new Date(dateString);
+    const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+    return days[date.getDay()];
+  };
+
+  // Get filtered weather data based on activeTab
+  const getFilteredWeatherData = () => {
+    if (!weatherData.length) return [];
+
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+    switch (activeTab) {
+      case "Hôm nay":
+        return weatherData.filter(item => item.date === today);
+      case "Ngày mai":
+        return weatherData.filter(item => item.date === tomorrow);
+      case "7 ngày tới":
+        return weatherData;
+      default:
+        return weatherData;
+    }
+  };
+
+  const renderItem = ({ item }: { item: WeatherData }) => (
+    <ForecastDayItem
+      day={getDayName(item.date)}
+      date={formatDate(item.date)}
+      tempDay={`${item.maxTempC}°`}
+      tempNight={`${item.minTempC}°`}
+      condition={translateCondition(item.condition)}
+      IconComponent={getWeatherIcon(item.condition)}
+      DetailComponent={<ForecastDetail date={item.date} />}
+    />
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onSearchPress={() => {
+          console.log("Tìm kiếm...");
+        }}
+      />
+
+      <FlatList
+        data={getFilteredWeatherData()}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.date}
+        contentContainerStyle={styles.listContainer}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f0ff",
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  listContainer: {
+    paddingVertical: 8,
   },
 });
