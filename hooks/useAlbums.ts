@@ -3,15 +3,18 @@ import axios from "axios";
 
 const API_BASE = "http://192.168.2.102:3000/api";
 
-const useAlbums = () => {
+const useAlbums = (artistId?: string) => {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchAllAlbums = async () => {
+  const fetchAllAlbums = async (artistId?: string) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/albums`);
+      const apiURL = artistId
+        ? `${API_BASE}/albums?artistId=${artistId}`
+        : `${API_BASE}/albums`;
+      const res = await axios.get(apiURL);
       setAlbums(res.data);
     } catch (err: any) {
       setError(err);
@@ -20,7 +23,7 @@ const useAlbums = () => {
   };
 
   useEffect(() => {
-    fetchAllAlbums();
+    fetchAllAlbums(artistId);
   }, []);
 
   return {
