@@ -85,7 +85,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Explore",
+          title: "DucNA1",
           tabBarIcon: () => (
             <Image source={require("@/assets/images/radar.png")} />
           ),
