@@ -7,12 +7,25 @@ interface HeaderProps {
   onSearchPress: () => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  headerData: {
+    location: string;
+    temperature: number;
+    condition: string;
+    date: string;
+    day: string;
+    night: string;
+    humidity: number;
+    windSpeed: number;
+    feelsLike: number;
+    avgtemp_c: number;
+  } | null;
 }
 
 const Header: React.FC<HeaderProps> = ({
   onSearchPress,
   activeTab,
   setActiveTab,
+  headerData,
 }) => {
   type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
   const router = useRouter();
@@ -22,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
   const weatherData = {
     location: "Ha Noi, Viet Nam",
     temperature: 3,
-    condition: "có nắng", // Cloudy
+    condition: "Cloudy", // Cloudy
     date: "08/03/2025, 16:14",
     day: "Ngày 3°",
     night: "Tối -1°",
@@ -31,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
     feelsLike: 1,
   };
 
+  console.log("Header data: ", headerData);
   // Function to determine which icon to display based on weather condition
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
@@ -57,7 +71,9 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const weatherIcon = getWeatherIcon(weatherData.condition);
+  const weatherIcon = getWeatherIcon(
+    headerData?.condition || weatherData.condition
+  );
 
   const handleSearch = () => {
     router.push("/pages/weather-search");
@@ -67,9 +83,9 @@ const Header: React.FC<HeaderProps> = ({
       {/* Row 1: Location + Search */}
       <View style={styles.rowBetween}>
         <View style={styles.row}>
-          <Text style={styles.location}> {weatherData.location}</Text>
+          <Text style={styles.location}> {headerData?.location}</Text>
         </View>
-        <TouchableOpacity onPress={onSearchPress} style={{ padding: 8 }}>
+        <TouchableOpacity onPress={handleSearch} style={{ padding: 8 }}>
           {/* Search Icon */}
           <Ionicons name="search" size={22} color="black" />
         </TouchableOpacity>
@@ -78,10 +94,12 @@ const Header: React.FC<HeaderProps> = ({
       {/* Row 2: Temperature + Real feel + Weather Icon */}
       <View style={[styles.rowBetween, styles.tempRow]}>
         <View>
-          <Text style={styles.temperature}>{weatherData.temperature}°</Text>
+          <Text style={styles.temperature}>{headerData?.temperature}°</Text>
         </View>
         <View>
-          <Text style={styles.realFeel}>Nhiệt độ thực tế -2</Text>
+          <Text style={styles.realFeel}>
+            Nhiệt độ thực tế {headerData?.avgtemp_c}
+          </Text>
         </View>
         {/* <MaterialCommunityIcons
           name="weather-partly-cloudy"
@@ -154,7 +172,7 @@ const styles = StyleSheet.create({
   realFeel: {
     fontSize: 14,
     color: "#444",
-    marginLeft: -135,
+    marginLeft: -100,
     marginTop: 24,
   },
   tabRow: {

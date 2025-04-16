@@ -15,6 +15,7 @@ const screenWidth = Dimensions.get("window").width;
 
 interface ForecastDetailProps {
   date: string;
+  currentLocation: string;
 }
 
 interface WeatherDetail {
@@ -30,6 +31,7 @@ interface WeatherDetail {
   uv: number;
   sunrise: string;
   sunset: string;
+  daily_chance_of_rain: number;
 }
 
 interface HourlyForecast {
@@ -52,12 +54,18 @@ interface HourlyRainChance {
 const API_KEY = "7ee1943f1ded42e086784930252802";
 const BASE_URL = "http://api.weatherapi.com/v1";
 
-const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
+const ForecastDetail: React.FC<ForecastDetailProps> = ({
+  date,
+  currentLocation,
+}) => {
   const [weatherDetail, setWeatherDetail] = useState<WeatherDetail | null>(
     null
   );
+  console.log("weatherDetail: ", weatherDetail);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
-  const [hourlyRainChances, setHourlyRainChances] = useState<HourlyRainChance[]>([]);
+  const [hourlyRainChances, setHourlyRainChances] = useState<
+    HourlyRainChance[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   const translateCondition = (condition: string) => {
@@ -126,6 +134,8 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
       const data = await res.json();
       const forecastDays = data.forecast.forecastday;
 
+      console.log("Dữ liệu dự báo thời tiết: ", forecastDays);
+
       const dayData = forecastDays.find((d: any) => d.date === date);
       if (!dayData) {
         console.warn(`Không tìm thấy dữ liệu cho ngày ${date}`);
@@ -145,6 +155,7 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
         uv: dayData.day.uv,
         sunrise: dayData.astro.sunrise,
         sunset: dayData.astro.sunset,
+        daily_chance_of_rain: dayData.day.daily_chance_of_rain,
       };
     } catch (error: any) {
       console.error("Lỗi khi lấy dữ liệu thời tiết:", error.message);
@@ -222,9 +233,9 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
   useEffect(() => {
     const fetchWeatherData = async () => {
       setLoading(true);
-      const data = await getWeatherByDate("Ha Noi", date);
-      const hourlyData = await getHourlyForecast("Ha Noi", date);
-      const rainChances = await getHourlyRainChances("Ha Noi", date);
+      const data = await getWeatherByDate(currentLocation, date);
+      const hourlyData = await getHourlyForecast(currentLocation, date);
+      const rainChances = await getHourlyRainChances(currentLocation, date);
       setWeatherDetail(data);
       setHourlyForecast(hourlyData || []);
       setHourlyRainChances(rainChances || []);
@@ -289,9 +300,9 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
   }
 
   const getGradientColors = (percentage: number): [string, string] => {
-    if (percentage < 30) return ['#8e44ad', '#9b59b6'];
-    if (percentage < 60) return ['#9b59b6', '#6a3093'];
-    return ['#6a3093', '#5438DC'];
+    if (percentage < 30) return ["#8e44ad", "#9b59b6"];
+    if (percentage < 60) return ["#9b59b6", "#6a3093"];
+    return ["#6a3093", "#5438DC"];
   };
 
   const renderRainChanceBars = () => {
@@ -299,7 +310,7 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
       const time = new Date(item.time);
       const hour = time.getHours();
       const formattedHour = `${hour}h`;
-      
+
       return (
         <View key={index} style={styles.rainChanceItem}>
           <Text style={styles.hourText}>{formattedHour}</Text>
@@ -311,7 +322,12 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
               style={[styles.barGradient, { width: `${item.chanceOfRain}%` }]}
             />
           </View>
-          <Text style={[styles.percentText, { color: getTextColor(item.chanceOfRain) }]}>
+          <Text
+            style={[
+              styles.percentText,
+              { color: getTextColor(item.chanceOfRain) },
+            ]}
+          >
             {item.chanceOfRain}%
           </Text>
         </View>
@@ -320,9 +336,9 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
   };
 
   const getTextColor = (percentage: number): string => {
-    if (percentage < 30) return '#8e44ad';
-    if (percentage < 60) return '#9b59b6';
-    return '#6a3093';
+    if (percentage < 30) return "#8e44ad";
+    if (percentage < 60) return "#9b59b6";
+    return "#6a3093";
   };
 
   return (
@@ -331,7 +347,10 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
 
       {/* Hourly Forecast */}
       <View style={styles.forecastContainer}>
-        <Text style={styles.label}>Dự báo hàng giờ</Text>
+        <View style={styles.forecastHeader}>
+          <Ionicons name="time-outline" size={20} color="#333" />
+          <Text style={styles.forecastTitle}>Dự báo theo giờ</Text>
+        </View>
         <FlatList
           data={hourlyForecast}
           renderItem={renderHourlyItem}
@@ -340,77 +359,67 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.hourRow}
         />
-        <TemperatureChart
-          hourlyData={hourlyForecast.map((hour) => ({
-            time: hour.time,
-            tempC: hour.tempC,
-          }))}
-        />
-      </View>
 
-      <View style={styles.forecastCard}>
-        <View style={styles.forecastHeader}>
-          <Ionicons name="time-outline" size={20} color="#333" />
-          <Text style={styles.forecastTitle}>Khả năng mưa theo giờ</Text>
-        </View>
-
-        <View style={styles.rainChanceContainer}>{renderRainChanceBars()}</View>
-      </View>
-
-      {/* Main Weather Info */}
-      <View style={styles.mainInfoContainer}>
-        <View style={styles.mainInfoItem}>
-          <Ionicons name="thermometer" size={24} color="#885FFC" />
-          <Text style={styles.mainInfoLabel}>Nhiệt độ trung bình</Text>
-          <Text style={styles.mainInfoValue}>{weatherDetail.avgTempC}°C</Text>
-        </View>
-        <View style={styles.mainInfoItem}>
-          <Ionicons name="water" size={24} color="#885FFC" />
-          <Text style={styles.mainInfoLabel}>Độ ẩm</Text>
-          <Text style={styles.mainInfoValue}>{weatherDetail.humidity}%</Text>
-        </View>
-      </View>
-
-      {/* Weather Details */}
-      <View style={styles.detailsContainer}>
-        {/* Wind & Rain */}
-        <View style={styles.row}>
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="speedometer" size={20} color="#885FFC" />
-              <Text style={styles.label}>Tốc độ gió</Text>
-            </View>
-            <Text style={styles.value}>{weatherDetail.windSpeed} km/h</Text>
+        {/* Main Weather Info */}
+        <View style={styles.mainInfoContainer}>
+          <View style={styles.mainInfoItem}>
+            <Ionicons name="thermometer" size={24} color="#885FFC" />
+            <Text style={styles.mainInfoLabel}>Nhiệt độ trung bình</Text>
+            <Text style={styles.mainInfoValue}>{weatherDetail.avgTempC}°C</Text>
           </View>
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="water" size={20} color="#885FFC" />
-              <Text style={styles.label}>Áp suất</Text>
-            </View>
-            <Text style={styles.value}>{weatherDetail.pressure} mb</Text>
+          <View style={styles.mainInfoItem}>
+            <Ionicons name="water" size={24} color="#885FFC" />
+            <Text style={styles.mainInfoLabel}>Độ ẩm</Text>
+            <Text style={styles.mainInfoValue}>{weatherDetail.humidity}%</Text>
           </View>
         </View>
 
-        {/* Pressure & UV */}
-        <View style={styles.row}>
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="speedometer-outline" size={20} color="#885FFC" />
-              <Text style={styles.label}>Chỉ số UV</Text>
+        {/* Weather Details */}
+        <View style={styles.detailsContainer}>
+          {/* Wind & Rain */}
+          <View style={styles.row}>
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons name="speedometer" size={20} color="#885FFC" />
+                <Text style={styles.label}>Tốc độ gió</Text>
+              </View>
+              <Text style={styles.value}>{weatherDetail.windSpeed} km/h</Text>
             </View>
-            <Text style={styles.value}>{weatherDetail.uv}</Text>
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons name="water" size={20} color="#885FFC" />
+                <Text style={styles.label}>Cơ hội mưa</Text>
+              </View>
+              <Text style={styles.value}>
+                {weatherDetail.daily_chance_of_rain} %
+              </Text>
+            </View>
           </View>
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="sunny" size={20} color="#FDB813" />
-              <Text style={styles.label}>Điều kiện</Text>
+
+          {/* Pressure & UV */}
+          <View style={styles.row}>
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons
+                  name="speedometer-outline"
+                  size={20}
+                  color="#885FFC"
+                />
+                <Text style={styles.label}>Chỉ số UV</Text>
+              </View>
+              <Text style={styles.value}>{weatherDetail.uv}</Text>
             </View>
-            <Text style={styles.value}>
-              {translateCondition(weatherDetail.condition)}
-            </Text>
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons name="sunny" size={20} color="#FDB813" />
+                <Text style={styles.label}>Điều kiện</Text>
+              </View>
+              <Text style={styles.value}>
+                {translateCondition(weatherDetail.condition)}
+              </Text>
+            </View>
           </View>
         </View>
-
         {/* Sunrise / Sunset */}
         <View style={styles.row}>
           <View style={styles.card}>
@@ -426,6 +435,28 @@ const ForecastDetail: React.FC<ForecastDetailProps> = ({ date }) => {
               <Text style={styles.label}>Mặt trời lặn</Text>
             </View>
             <Text style={styles.value}>{weatherDetail.sunset}</Text>
+          </View>
+        </View>
+
+        {/* Temperature Chart */}
+        <View style={styles.forecastContainer}>
+          <TemperatureChart
+            hourlyData={hourlyForecast.map((hour) => ({
+              time: hour.time,
+              tempC: hour.tempC,
+            }))}
+          />
+        </View>
+
+        {/* Rain Chance Forecast */}
+        <View style={styles.forecastCard}>
+          <View style={styles.forecastHeader}>
+            <Ionicons name="time-outline" size={20} color="#333" />
+            <Text style={styles.forecastTitle}>Khả năng mưa theo giờ</Text>
+          </View>
+
+          <View style={styles.rainChanceContainer}>
+            {renderRainChanceBars()}
           </View>
         </View>
       </View>
@@ -456,6 +487,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     borderRadius: 16,
     padding: 16,
+    marginTop: 16,
   },
   mainInfoItem: {
     alignItems: "center",
@@ -481,6 +513,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 16,
     paddingHorizontal: 8,
+    marginTop: 8,
     gap: 5,
   },
   card: {
@@ -506,10 +539,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginLeft: 8,
+    marginBottom: 8,
+    marginTop: 8,
     flex: 1,
   },
   value: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "bold",
     color: "#333",
   },
@@ -528,7 +563,7 @@ const styles = StyleSheet.create({
   forecastContainer: {
     // backgroundColor: "#D9C2FF",
     borderRadius: 12,
-    padding: 12,
+    // padding: 11,
     marginBottom: 12,
   },
   hourRow: {
@@ -550,7 +585,6 @@ const styles = StyleSheet.create({
   },
   forecastCard: {
     backgroundColor: "rgba(255, 255, 255, 0.5)",
-    margin: 16,
     borderRadius: 16,
     padding: 16,
     shadowColor: "#000",
@@ -558,6 +592,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    width: "100%",
+    marginVertical: 15,
   },
   forecastHeader: {
     flexDirection: "row",
