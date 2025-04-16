@@ -2,7 +2,7 @@ import { SafeAreaView, Text, FlatList, Image, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import tw from "twrnc";
 import CustomTabList from "./CustomTabList";
-import useAlbums from "@/hooks/useAlbums";
+import { useAlbums } from "@/hooks/useAlbums";
 const PLAYLIST = [
   {
     id: 1,
@@ -37,6 +37,8 @@ const Playlists = () => {
     <SafeAreaView>
       <Text style={tw`mb-[18px]`}>Playlist</Text>
       <CustomTabList
+        onPress
+        isAlbum
         data={albums.map((item: any) => {
           return {
             id: item?._id,

@@ -15,6 +15,7 @@ import Artist from "@/components/music-recomment/Artist";
 import Song from "@/components/music-recomment/Song";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useWeather } from "@/hooks/useWeather";
 
 const tabBar = [
   {
@@ -36,18 +37,20 @@ const tabBar = [
 
 export default function TabTwoScreen() {
   const [activeTab, setActiveTab] = useState("");
-
+  const { weather } = useWeather();
   return (
     <View style={tw`bg-[#F6EDFF] flex-1`}>
       <View style={tw`bg-[#E1D3FA] p-[18px]`}>
         <View style={tw`flex-row justify-between items-center mt-[18px]`}>
           <Text style={tw`text-[18px] leading-[28px] text-bold`}>
-            Hà Nội, Việt Nam
+            {weather?.location?.name}, {weather?.location?.country}
           </Text>
-          <Ionicons name="search" size={24} color="white" />
+          {/* <Ionicons name="search" size={24} color="white" /> */}
         </View>
         <View style={tw`flex-row justify-between`}>
-          <Text style={tw`text-[58px] leading-[64px]`}>3°C</Text>
+          <Text style={tw`text-[40px] leading-[64px]`}>
+            {weather?.current?.temp_c}°C
+          </Text>
           <Image source={require("@/assets/images/cloud_and_sun.png")} />
         </View>
         <View style={tw`flex-row gap-4`}>

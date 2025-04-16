@@ -1,8 +1,9 @@
 import CustomTabList from "@/components/music-recomment/CustomTabList";
-import useAlbums from "@/hooks/useAlbums";
+import { useAlbums } from "@/hooks/useAlbums";
 import { useArtistDetail } from "@/hooks/useArtist";
 import { useRoute } from "@react-navigation/native";
-import { View, Text, Image, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
+import { View, Text, Image, ScrollView, Pressable } from "react-native";
 
 import tw from "twrnc";
 
@@ -36,6 +37,7 @@ const PLAYLIST = [
 
 export default function TabTwoScreen() {
   const route = useRoute();
+  const router = useRouter();
   const { singerId } = route.params as { singerId: string };
   const { artist } = useArtistDetail(singerId);
   const { albums } = useAlbums(singerId);
@@ -83,7 +85,8 @@ export default function TabTwoScreen() {
       >
         <Text style={tw`text-[#222222] text-[16px] mb-[20px]`}>Albums</Text>
         {albums.map((item: any, index: number) => (
-          <View
+          <Pressable
+            onPress={() => router.navigate(`/album/${item._id}`)}
             key={index}
             style={tw.style("flex-row items-cente rounded-xl mb-[18px]")}
           >
@@ -98,7 +101,7 @@ export default function TabTwoScreen() {
                 {item?.release_date}
               </Text>
             </View>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
     </>
