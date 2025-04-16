@@ -1,12 +1,63 @@
 import { StyleSheet, Text, View } from "react-native";
 import CustomFlatList from "./CustomFlatList";
 import { useArtists } from "@/hooks/useArtist";
-import { useAlbums } from "@/hooks/useAlbums";
+import { useAlbums, useAlbumsByWeather } from "@/hooks/useAlbums";
 import { useTracks } from "@/hooks/useTracks";
 
-const Base = () => {
+export function mapWeatherCondition(
+  apiCondition: string,
+  tempCelsius: number,
+  windKph: number
+) {
+  const condition = apiCondition?.toLowerCase() || "sunny";
+
+  if (condition.includes("sunny") || condition.includes("clear")) {
+    return "sunny";
+  }
+
+  if (
+    condition.includes("rain") ||
+    condition.includes("drizzle") ||
+    condition.includes("shower")
+  ) {
+    return "rainy";
+  }
+
+  if (condition.includes("cloud") || condition.includes("overcast")) {
+    return "cloudy";
+  }
+
+  if (
+    condition.includes("fog") ||
+    condition.includes("mist") ||
+    condition.includes("haze")
+  ) {
+    return "foggy";
+  }
+
+  if (tempCelsius <= 15) {
+    return "cold";
+  }
+
+  if (tempCelsius >= 30) {
+    return "hot";
+  }
+
+  if (windKph > 25) {
+    return "windy";
+  }
+
+  return "sunny";
+}
+
+const Base = ({ weather }: any) => {
   const { artists } = useArtists();
-  const { albums } = useAlbums();
+  const weatherCondition = mapWeatherCondition(
+    weather?.current?.condition?.text,
+    weather?.current?.temp_c,
+    weather?.current?.wind_kph
+  );
+  const { albums } = useAlbumsByWeather(weatherCondition);
   // const { tracks } = useTracks();
   return (
     <>
@@ -17,7 +68,7 @@ const Base = () => {
         <Text>Albums</Text>
       </View>
       <CustomFlatList
-        data={albums.slice(0, 10).map((item: any) => {
+        data={albums.map((item: any) => {
           return {
             id: item?._id,
             name: item?.name,
