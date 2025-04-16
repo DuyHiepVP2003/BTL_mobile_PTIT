@@ -23,7 +23,7 @@ export default function TabTwoScreen() {
     <ScrollView>
       <View>
         <View
-          style={tw`text-[#222222] text-[20px] p-[18px] py-[50px] bg-[#F6EDFF]`}
+          style={tw`text-[#222222] w-full flex items-center text-[20px] p-[18px] py-[50px] bg-[#F6EDFF]`}
         >
           <Text style={tw`text-center text-[18px] font-bold`}>
             Bài hát hiện tại

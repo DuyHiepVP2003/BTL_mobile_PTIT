@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
-const API_BASE = "http://192.168.2.102:3000/api";
+const API_BASE = 'http://172.11.153.128:3000/api'
 
 const useAlbums = (artistId?: string) => {
-  const [albums, setAlbums] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [albums, setAlbums] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   const fetchAllAlbums = async (artistId?: string) => {
-    setLoading(true);
+    setLoading(true)
     try {
       const apiURL = artistId
         ? `${API_BASE}/albums?artistId=${artistId}`
-        : `${API_BASE}/albums`;
-      const res = await axios.get(apiURL);
-      setAlbums(res.data);
+        : `${API_BASE}/albums`
+      const res = await axios.get(apiURL)
+      setAlbums(res.data)
     } catch (err: any) {
-      setError(err);
+      setError(err)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchAllAlbums(artistId);
-  }, []);
+    fetchAllAlbums(artistId)
+  }, [])
 
   return {
     albums,
