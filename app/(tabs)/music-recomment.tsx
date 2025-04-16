@@ -75,7 +75,7 @@ export default function TabTwoScreen() {
         {activeTab === "playlist" && <Playlists />}
         {activeTab === "artist" && <Artist />}
         {activeTab === "song" && <Song />}
-        {activeTab === "" && <Base />}
+        {activeTab === "" && <Base weather={weather}/>}
       </ScrollView>
     </View>
   );

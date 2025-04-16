@@ -1,60 +1,60 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const API_BASE = 'http://172.11.153.128:3000/api'
+const API_BASE = "http://172.11.153.17:3000/api";
 
 export const useArtists = () => {
-  const [artists, setArtists] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchAllArtists = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/artists`)
-      setArtists(res.data)
+      const res = await axios.get(`${API_BASE}/artists`);
+      setArtists(res.data);
     } catch (err: any) {
-      setError(err)
+      setError(err);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchAllArtists()
-  }, [])
+    fetchAllArtists();
+  }, []);
 
   return {
     artists,
     loading,
     error,
-    fetchAllArtists
-  }
-}
+    fetchAllArtists,
+  };
+};
 
 export const useArtistDetail = (id: string) => {
-  const [artist, setArtist] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [artist, setArtist] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const getArtistDetail = async (id: string) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/artists/${id}`)
-      setArtist(res.data)
+      const res = await axios.get(`${API_BASE}/artists/${id}`);
+      setArtist(res.data);
     } catch (err: any) {
-      setError(err)
+      setError(err);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    getArtistDetail(id)
-  }, [])
+    getArtistDetail(id);
+  }, []);
 
   return {
     artist,
     loading,
     error,
-    getArtistDetail
-  }
-}
+    getArtistDetail,
+  };
+};

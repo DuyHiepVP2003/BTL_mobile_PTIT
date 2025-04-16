@@ -1,90 +1,90 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const API_BASE = 'http://172.11.153.128:3000/api'
+const API_BASE = "http://172.11.153.17:3000/api";
 
 const useTracks = () => {
-  const [tracks, setTracks] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [tracks, setTracks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchAllTracks = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/tracks`)
-      setTracks(res.data)
+      const res = await axios.get(`${API_BASE}/tracks`);
+      setTracks(res.data);
     } catch (err: any) {
-      setError(err)
+      setError(err);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetchAllTracks()
-  }, [])
+    fetchAllTracks();
+  }, []);
 
   return {
     tracks,
     loading,
     error,
-    fetchAllTracks
-  }
-}
+    fetchAllTracks,
+  };
+};
 
 const useTrackDetail = (id: string) => {
-  const [track, setTrack] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [track, setTrack] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const getTrackDetail = async (id: string) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/tracks/${id}`)
-      setTrack(res.data)
+      const res = await axios.get(`${API_BASE}/tracks/${id}`);
+      setTrack(res.data);
     } catch (err: any) {
-      setError(err)
+      setError(err);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    getTrackDetail(id)
-  }, [])
+    getTrackDetail(id);
+  }, []);
 
   return {
     track,
     loading,
     error,
-    getTrackDetail
-  }
-}
+    getTrackDetail,
+  };
+};
 
 const useTrackDetailByAlbumId = (id: string) => {
-  const [track, setTrack] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [track, setTrack] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const getTrackDetail = async (id: string) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/tracks/album/${id}`)
-      setTrack(res.data)
+      const res = await axios.get(`${API_BASE}/tracks/album/${id}`);
+      setTrack(res.data);
     } catch (err: any) {
-      setError(err)
+      setError(err);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    getTrackDetail(id)
-  }, [])
+    getTrackDetail(id);
+  }, []);
 
   return {
     track,
     loading,
     error,
-    getTrackDetail
-  }
-}
+    getTrackDetail,
+  };
+};
 
-export { useTracks, useTrackDetail, useTrackDetailByAlbumId }
+export { useTracks, useTrackDetail, useTrackDetailByAlbumId };
