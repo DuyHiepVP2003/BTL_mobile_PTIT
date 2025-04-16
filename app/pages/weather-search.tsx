@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Location from "expo-location";
+
+const API_KEY = "7ee1943f1ded42e086784930252802";
 
 type LocationItem = {
   id: string;
@@ -25,58 +28,60 @@ export default function WeatherSearchScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock recent searches
-  const [recentSearches, setRecentSearches] = useState<LocationItem[]>([
-    {
-      id: "1",
-      name: "Nghe An",
-      country: "Việt Nam",
-      temp: 22,
-      condition: "Không ẩm, nắng nhẹ",
-    },
-    {
-      id: "2",
-      name: "Ha Noi",
-      country: "Việt Nam",
-      temp: 21,
-      condition: "Hơi mát chút",
-    },
-  ]);
+  const [recentSearches, setRecentSearches] = useState<LocationItem[]>([]);
+  const [currentLocation, setCurrentLocation] = useState<LocationItem | null>(
+    null
+  );
 
-  // Mock search results - in a real app, this would come from an API
   const [searchResults, setSearchResults] = useState<LocationItem[]>([]);
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      // In a real app, you would call your weather API here
-      // For now, we'll just mock some results
-      setSearchResults([
-        {
-          id: "3",
-          name: "Hà Nội",
-          country: "Việt Nam",
-          temp: 21,
-          condition: "Hơi mát chút",
-        },
-        {
-          id: "4",
-          name: "Hà Giang",
-          country: "Việt Nam",
-          temp: 19,
-          condition: "Mát mẻ",
-        },
-        {
-          id: "5",
-          name: "Hà Tĩnh",
-          country: "Việt Nam",
-          temp: 24,
-          condition: "Nắng nhẹ",
-        },
-      ]);
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await fetch(
+        `http://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${encodeURIComponent(
+          searchQuery
+        )}`
+      );
+      const locations = await res.json();
+
+      if (Array.isArray(locations) && locations.length > 0) {
+        // Dùng Promise.all để gọi API cho từng vị trí
+        const resultsWithWeather: LocationItem[] = await Promise.all(
+          locations.map(async (loc: any) => {
+            const weatherRes = await fetch(
+              `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${loc.name}`
+            );
+            const weatherData = await weatherRes.json();
+            return {
+              id: `${loc.id}-${loc.name}`,
+              name: loc.name,
+              country: loc.country,
+              temp: weatherData.current.temp_c,
+              condition: weatherData.current.condition.text,
+            };
+          })
+        );
+
+        setSearchResults(resultsWithWeather);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm thời tiết:", error);
     }
   };
 
   const handleLocationSelect = (location: LocationItem) => {
+    // Cập nhật recentSearches: đẩy location lên đầu, xoá bản trùng nếu có
+    setRecentSearches((prev) => {
+      const updated = [
+        location,
+        ...prev.filter((item) => item.id !== location.id),
+      ];
+      return updated.slice(0, 5); // Giới hạn tối đa 5 mục gần đây
+    });
     // Navigate to the weather detail screen with the selected location
     router.push({
       pathname: "/pages/weather-detail",
@@ -98,9 +103,42 @@ export default function WeatherSearchScreen() {
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.warn("Permission to access location was denied");
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        // Call API weather theo toạ độ thật:
+        const response = await fetch(
+          `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${latitude},${longitude}&lang=vi`
+        );
+        const data = await response.json();
+
+        const locationData: LocationItem = {
+          id: `${latitude},${longitude}`,
+          name: data.location.name,
+          country: data.location.country,
+          temp: data.current.temp_c,
+          condition: data.current.condition.text,
+        };
+
+        setCurrentLocation(locationData);
+      } catch (error) {
+        console.error("Lỗi lấy vị trí hiện tại:", error);
+      }
+    })();
+  }, []);
+
   return (
     <ImageBackground
-      // source={require('../../assets/images/weather-search.jpg')}
+      source={require("../../assets/images/weather-search.jpg")}
       style={styles.backgroundImage}
     >
       <SafeAreaView style={styles.container}>
@@ -148,13 +186,16 @@ export default function WeatherSearchScreen() {
         </View>
         {searchQuery.length === 0 && (
           <>
-            <Text style={styles.sectionTitle}>Vị trí hiện tại</Text>
-            {renderLocationItem({ item: recentSearches[1] })}
-
+            {currentLocation && (
+              <>
+                <Text style={styles.sectionTitle}>Vị trí hiện tại</Text>
+                {renderLocationItem({ item: currentLocation })}
+              </>
+            )}
             <Text style={styles.sectionTitle}>Tìm kiếm gần đây</Text>
             <FlatList
               data={recentSearches}
-              renderItem={renderLocationItem}
+              renderItem={renderLocationItem || null}
               keyExtractor={(item) => item.id}
               scrollEnabled={false}
             />
