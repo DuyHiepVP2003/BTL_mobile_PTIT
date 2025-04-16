@@ -31,4 +31,60 @@ const useTracks = () => {
   };
 };
 
-export default useTracks;
+const useTrackDetail = (id: string) => {
+  const [track, setTrack] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getTrackDetail = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_BASE}/tracks/${id}`);
+      setTrack(res.data);
+    } catch (err: any) {
+      setError(err);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getTrackDetail(id);
+  }, []);
+
+  return {
+    track,
+    loading,
+    error,
+    getTrackDetail,
+  };
+};
+
+const useTrackDetailByAlbumId = (id: string) => {
+  const [track, setTrack] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getTrackDetail = async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_BASE}/tracks/album/${id}`);
+      setTrack(res.data);
+    } catch (err: any) {
+      setError(err);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getTrackDetail(id);
+  }, []);
+
+  return {
+    track,
+    loading,
+    error,
+    getTrackDetail,
+  };
+};
+
+export { useTracks, useTrackDetail, useTrackDetailByAlbumId };

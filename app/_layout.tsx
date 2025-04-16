@@ -37,6 +37,8 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(details)" options={{ headerShown: false }} />
         <Stack.Screen name="singer" options={{ headerShown: false }} />
+        <Stack.Screen name="album" options={{ headerShown: false }} />
+        <Stack.Screen name="song" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

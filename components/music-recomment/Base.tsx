@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
 import CustomFlatList from "./CustomFlatList";
 import { useArtists } from "@/hooks/useArtist";
-import useAlbums from "@/hooks/useAlbums";
-import useTracks from "@/hooks/useTracks";
+import { useAlbums } from "@/hooks/useAlbums";
+import { useTracks } from "@/hooks/useTracks";
 
 const Base = () => {
   const { artists } = useArtists();
   const { albums } = useAlbums();
-  const { tracks } = useTracks();
+  // const { tracks } = useTracks();
   return (
     <>
       <View style={styles.titleContainer}>
