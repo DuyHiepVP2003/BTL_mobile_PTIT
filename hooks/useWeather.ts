@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_BASE = "http://192.168.2.102:3000/api";
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
 export const useWeather = () => {
   const [weather, setWeather] = useState<any>(null);
