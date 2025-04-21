@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
 export default function TabTwoScreen() {
-  const { play, pause, stop, isPlaying } = useAudioPlayer();
+  const { play, pause, stop, isPlaying, duration, position } = useAudioPlayer();
   const route = useRoute();
   const router = useRouter();
   const { songId } = route.params as { songId: string };
@@ -40,16 +40,18 @@ export default function TabTwoScreen() {
             <Slider
               style={tw`w-full h-6`}
               minimumValue={0}
-              maximumValue={track?.duration_ms}
-              value={0}
+              maximumValue={duration}
+              value={position}
               minimumTrackTintColor="#8E05C2"
               maximumTrackTintColor="#d3d3d3"
               thumbTintColor="#8E05C2"
             />
             <View style={tw`flex-row justify-between mt-[-4px]`}>
-              <Text style={tw`text-xs text-gray-600`}>{formatTime(0)}</Text>
               <Text style={tw`text-xs text-gray-600`}>
-                {formatTime(track?.duration_ms)}
+                {formatTime(position)}
+              </Text>
+              <Text style={tw`text-xs text-gray-600`}>
+                {formatTime(duration)}
               </Text>
             </View>
             <View
@@ -61,16 +63,22 @@ export default function TabTwoScreen() {
                 resizeMode="cover"
               />
               <Pressable
-                onPress={() =>
-                  play(
-                    "https://res.cloudinary.com/dsgiqi6bg/video/upload/v1745168840/gcwrrmgwdlb4ky09rciy.mp3"
-                  )
-                }
-                style={tw`bg-[#E1D3FA] flex justify-center p-[20px] rounded-full`}
+                onPress={() => {
+                  isPlaying
+                    ? pause()
+                    : play(
+                        "https://res.cloudinary.com/dsgiqi6bg/video/upload/v1745168840/gcwrrmgwdlb4ky09rciy.mp3"
+                      );
+                }}
+                style={tw`bg-[#E1D3FA] flex justify-center items-center p-[20px] rounded-full`}
               >
                 <Image
-                  source={require("@/assets/images/pause-icon.png")}
-                  style={tw.style("rounded-md")}
+                  source={
+                    isPlaying
+                      ? require("@/assets/images/pause-icon.png")
+                      : require("@/assets/images/play-icon.png")
+                  }
+                  style={tw.style("w-[30px] h-[30px]")}
                   resizeMode="cover"
                 />
               </Pressable>
