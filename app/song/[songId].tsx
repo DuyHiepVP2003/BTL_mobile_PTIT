@@ -1,14 +1,15 @@
-import CustomTabList from "@/components/music-recomment/CustomTabList";
 import { useAlbums } from "@/hooks/useAlbums";
-import { useArtistDetail } from "@/hooks/useArtist";
 import { useRoute } from "@react-navigation/native";
 import { View, Text, Image, ScrollView, Pressable } from "react-native";
 import Slider from "@react-native-community/slider";
-
+import { Audio } from "expo-av";
 import tw from "twrnc";
 import { useTrackDetail } from "@/hooks/useTracks";
 import { useRouter } from "expo-router";
+import { useEffect, useRef } from "react";
+import { useAudioPlayer } from "@/context/AudioPlayerContext";
 export default function TabTwoScreen() {
+  const { play, pause, stop, isPlaying } = useAudioPlayer();
   const route = useRoute();
   const router = useRouter();
   const { songId } = route.params as { songId: string };
@@ -59,7 +60,12 @@ export default function TabTwoScreen() {
                 style={tw.style("rounded-md")}
                 resizeMode="cover"
               />
-              <View
+              <Pressable
+                onPress={() =>
+                  play(
+                    "https://res.cloudinary.com/dsgiqi6bg/video/upload/v1745168840/gcwrrmgwdlb4ky09rciy.mp3"
+                  )
+                }
                 style={tw`bg-[#E1D3FA] flex justify-center p-[20px] rounded-full`}
               >
                 <Image
@@ -67,7 +73,7 @@ export default function TabTwoScreen() {
                   style={tw.style("rounded-md")}
                   resizeMode="cover"
                 />
-              </View>
+              </Pressable>
               <Image
                 source={require("@/assets/images/next-song-icon.png")}
                 style={tw.style("rounded-md")}
@@ -93,7 +99,9 @@ export default function TabTwoScreen() {
               resizeMode="cover"
             />
             <View style={tw.style("flex-1")}>
-              <Text style={tw.style("text-[14px] font-bold")}>{item?.name}</Text>
+              <Text style={tw.style("text-[14px] font-bold")}>
+                {item?.name}
+              </Text>
               <Text style={tw.style("text-[12px] text-gray-500")}>
                 {item?.release_date}
               </Text>

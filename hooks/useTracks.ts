@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_BASE = 'http://172.11.153.128:3000/api'
+const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
 const useTracks = () => {
   const [tracks, setTracks] = useState([])
