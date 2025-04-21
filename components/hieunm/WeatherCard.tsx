@@ -7,36 +7,17 @@ import {
   AppState,
   AppStateStatus,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  OpenWeatherMapService,
-  WeatherData,
-} from "@/services/api/openWeatherMapService";
+import { useWeather } from "../../hooks/useWeatherCard";
 
 export const WeatherCard = () => {
   type IoniconsName = React.ComponentProps<typeof Ionicons>["name"];
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [weatherData, setWeatherData] = useState<WeatherData>({
-    location: "Ha Noi, Viet Nam",
-    country: "Việt Nam",
-    temperature: 3,
-    condition: "Có mây", // Cloudy
-    date: "08/03/2025, 16:14",
-    day: "Ngày 3°",
-    night: "Tối -1°",
-    humidity: 78,
-    windSpeed: 12,
-    feelsLike: 1,
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
+  const { weatherData, loading, error, checkAndUpdateWeatherIfNeeded } = useWeather();
 
   useEffect(() => {
     const subscription = AppState.addEventListener(
@@ -52,79 +33,9 @@ export const WeatherCard = () => {
     }
   };
 
-  const checkAndUpdateWeatherIfNeeded = async () => {
-    const now = Date.now();
-    const THIRTY_MINUTES = 60 * 1000;
-
-    if (now - lastFetchTime > THIRTY_MINUTES) {
-      fetchWeatherData();
-    }
+  const handleSearch = () => {
+    router.push("/pages/weather-search");
   };
-
-  const fetchWeatherData = async () => {
-    try {
-      setLoading(true);
-
-      const savedCity = (await AsyncStorage.getItem("lastCity")) || "Hanoi,vn";
-
-      const weatherService = new OpenWeatherMapService();
-      const data = await weatherService.getCurrentWeather(savedCity);
-
-      data.condition = weatherService.translateCondition(data.condition);
-
-      setWeatherData(data);
-      setError(null);
-      setLastFetchTime(Date.now());
-
-      await AsyncStorage.setItem("cachedWeatherData", JSON.stringify(data));
-      await AsyncStorage.setItem("lastFetchTime", Date.now().toString());
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      setError("Không thể tải dữ liệu thời tiết");
-
-      try {
-        const cachedData = await AsyncStorage.getItem("cachedWeatherData");
-        if (cachedData) {
-          setWeatherData(JSON.parse(cachedData));
-        }
-      } catch (cacheError) {
-        // Keep using mock data if no cache is available
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const initWeatherData = async () => {
-      try {
-        const cachedData = await AsyncStorage.getItem("cachedWeatherData");
-        const lastFetch = await AsyncStorage.getItem("lastFetchTime");
-
-        if (cachedData && lastFetch) {
-          const parsedData = JSON.parse(cachedData);
-          const lastFetchMs = parseInt(lastFetch, 10);
-          setWeatherData(parsedData);
-          setLastFetchTime(lastFetchMs);
-
-          const now = Date.now();
-          const THIRTY_MINUTES = 60 * 1000;
-
-          if (now - lastFetchMs < THIRTY_MINUTES) {
-            setLoading(false);
-            return;
-          }
-        }
-
-        fetchWeatherData();
-      } catch (error) {
-        console.error("Error initializing weather data:", error);
-        fetchWeatherData();
-      }
-    };
-
-    initWeatherData();
-  }, []);
 
   const getWeatherIcon = (condition: string, conditionMain?: string) => {
     if (conditionMain) {
@@ -192,14 +103,9 @@ export const WeatherCard = () => {
     }
   };
 
-  const weatherIcon = getWeatherIcon(
-    weatherData.condition,
-    (weatherData as any).conditionMain
-  );
-
-  const handleSearch = () => {
-    router.push("/pages/weather-search");
-  };
+  const weatherIcon = weatherData
+    ? getWeatherIcon(weatherData.condition, undefined)
+    : { name: "partly-sunny", color: "#FFD700" };
 
   if (loading) {
     return (
@@ -210,11 +116,11 @@ export const WeatherCard = () => {
     );
   }
 
-  if (error) {
+  if (error || !weatherData) {
     return (
       <View style={[styles.weatherCard, styles.loadingContainer]}>
         <Ionicons name="cloud-offline" size={40} color="#fff" />
-        <Text style={styles.loadingText}>{error}</Text>
+        <Text style={styles.loadingText}>{error || "Không thể tải dữ liệu"}</Text>
         <Text style={styles.errorSubtext}>Đang hiển thị dữ liệu mẫu</Text>
       </View>
     );
@@ -293,12 +199,6 @@ export const WeatherCard = () => {
           <Ionicons name="speedometer-outline" size={18} color="white" />
           <Text style={styles.infoText}>{weatherData.windSpeed} km/h</Text>
         </View>
-        {weatherData.rain !== undefined && weatherData.rain > 0 && (
-          <View style={styles.infoItem}>
-            <Ionicons name="rainy-outline" size={18} color="white" />
-            <Text style={styles.infoText}>{weatherData.rain} mm</Text>
-          </View>
-        )}
       </View>
 
       <View style={styles.forecastContainer}>

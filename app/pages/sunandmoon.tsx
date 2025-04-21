@@ -7,7 +7,7 @@ import {
   Dimensions,
   ActivityIndicator
 } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter, Stack } from 'expo-router'
@@ -15,161 +15,88 @@ import { WeatherCard } from '@/components/hieunm/WeatherCard'
 import { ChatBotButton } from '@/components/hieunm/ChatBotButton'
 import { LinearGradient } from 'expo-linear-gradient'
 import Clock from '@/components/ui/icons/Clock'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { OpenWeatherMapService } from '@/services/api/openWeatherMapService'
+import { AppState, AppStateStatus } from 'react-native'
+import { useSunMoon } from '@/hooks/useSunMoon'
 
 const { width } = Dimensions.get('window')
 
-// Interface for sun and moon data
-interface SunMoonData {
-  sunrise: string;
-  sunset: string;
-  dayLength: string;
-  nightLength: string;
-  moonrise: string;
-  moonset: string;
-  moonPhase: string;
-  moonPhasePercentage: string;
-}
-
 export default function SunAndMoonScreen() {
   const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [sunMoonData, setSunMoonData] = useState<SunMoonData>({
-    sunrise: '7:00 AM',
-    sunset: '6:49 PM',
-    dayLength: '12:24',
-    nightLength: '11:45',
-    moonrise: '18:01',
-    moonset: '7:21',
-    moonPhase: 'Trăng tròn',
-    moonPhasePercentage: '100%'
-  })
+  const { 
+    sunMoonData, 
+    loading, 
+    error, 
+    fetchSunMoonData, 
+    checkAndUpdateDataIfNeeded
+  } = useSunMoon()
 
+  // Theo dõi trạng thái ứng dụng để cập nhật dữ liệu khi mở lại
   useEffect(() => {
-    fetchSunMoonData()
-  }, [])
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+    return () => subscription.remove();
+  }, []);
 
-  const fetchSunMoonData = async () => {
-    try {
-      setLoading(true)
-      
-      // Get the last searched city or default to Hanoi
-      const savedCity = await AsyncStorage.getItem('lastCity') || 'Hanoi,vn'
-      
-      // Create service instance
-      const weatherService = new OpenWeatherMapService()
-      
-      // Fetch weather data to get sunrise and sunset
-      const weatherData = await weatherService.getCurrentWeather(savedCity)
-      
-      if (weatherData && weatherData.sys) {
-        // Process sunrise and sunset times (convert from Unix timestamp to local time)
-        const sunriseDate = new Date(weatherData.sys.sunrise * 1000)
-        const sunsetDate = new Date(weatherData.sys.sunset * 1000)
-        
-        // Format times for display
-        const formatTime = (date: Date) => {
-          return date.toLocaleTimeString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-          })
-        }
-        
-        const sunrise = formatTime(sunriseDate)
-        const sunset = formatTime(sunsetDate)
-        
-        // Calculate day length (in hours and minutes)
-        const dayLengthMs = weatherData.sys.sunset * 1000 - weatherData.sys.sunrise * 1000
-        const dayLengthHours = Math.floor(dayLengthMs / (1000 * 60 * 60))
-        const dayLengthMinutes = Math.floor((dayLengthMs % (1000 * 60 * 60)) / (1000 * 60))
-        const dayLength = `${dayLengthHours}:${dayLengthMinutes.toString().padStart(2, '0')}`
-        
-        // Calculate night length (24h - day length)
-        const nightLengthHours = 23 - dayLengthHours
-        const nightLengthMinutes = 60 - dayLengthMinutes
-        const nightLength = `${nightLengthHours}:${nightLengthMinutes.toString().padStart(2, '0')}`
-        
-        // Generate fake moonrise and moonset data (opposite of sun)
-        // In reality, this should come from a proper astronomical calculation
-        const moonrise = formatTime(new Date(sunsetDate.getTime() + 1000 * 60 * 30)) // 30 minutes after sunset
-        const moonset = formatTime(new Date(sunriseDate.getTime() - 1000 * 60 * 30)) // 30 minutes before sunrise
-        
-        // Calculate approximate moon phase based on current date
-        // This is a very simple approximation - real calculation would be more complex
-        const date = new Date()
-        const synodic = 29.5 // days in lunar cycle
-        const dayOfYear = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))
-        const dayInCycle = dayOfYear % synodic
-        const phasePercent = Math.round((dayInCycle / synodic) * 100)
-        
-        // Determine moon phase name based on percentage
-        let moonPhase = 'Trăng mới'
-        if (phasePercent > 0 && phasePercent < 25) {
-          moonPhase = 'Trăng lưỡi liềm đầu tháng'
-        } else if (phasePercent >= 25 && phasePercent < 45) {
-          moonPhase = 'Trăng bán nguyệt đầu tháng'
-        } else if (phasePercent >= 45 && phasePercent < 55) {
-          moonPhase = 'Trăng tròn'
-        } else if (phasePercent >= 55 && phasePercent < 75) {
-          moonPhase = 'Trăng bán nguyệt cuối tháng'
-        } else if (phasePercent >= 75) {
-          moonPhase = 'Trăng lưỡi liềm cuối tháng'
-        }
-        
-        setSunMoonData({
-          sunrise,
-          sunset,
-          dayLength,
-          nightLength,
-          moonrise,
-          moonset,
-          moonPhase,
-          moonPhasePercentage: `${phasePercent}%`
-        })
-        
-        // Cache the data
-        await AsyncStorage.setItem('cachedSunMoonData', JSON.stringify({
-          sunrise,
-          sunset,
-          dayLength,
-          nightLength,
-          moonrise,
-          moonset,
-          moonPhase,
-          moonPhasePercentage: `${phasePercent}%`,
-          timestamp: Date.now()
-        }))
-      }
-    } catch (error) {
-      console.error('Error fetching sun and moon data:', error)
-      
-      // Try to load from cache if API call fails
-      try {
-        const cachedData = await AsyncStorage.getItem('cachedSunMoonData')
-        if (cachedData) {
-          const parsedData = JSON.parse(cachedData)
-          setSunMoonData(parsedData)
-        }
-      } catch (cacheError) {
-        console.error('Error loading cached sun/moon data:', cacheError)
-      }
-    } finally {
-      setLoading(false)
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
+    if (nextAppState === "active") {
+      checkAndUpdateDataIfNeeded();
     }
-  }
+  };
 
   // Function to get moon phase icon based on phase percentage
   const getMoonPhaseIcon = (): string => {
-    const percent = parseInt(sunMoonData.moonPhasePercentage) || 0
+    if (!sunMoonData) return "moon-outline"; 
     
-    if (percent < 5 || percent > 95) return "moon-outline" // New moon
-    if (percent < 45) return "moon-outline" // Crescent or quarter
-    if (percent < 55) return "moon" // Full moon
-    if (percent < 95) return "moon-outline" // Quarter or crescent waning
+    const percent = parseInt(sunMoonData.moonPhasePercentage) || 0;
     
-    return "moon-outline"
+    if (percent < 5 || percent > 95) return "moon-outline"; // New moon
+    if (percent < 45) return "moon-outline"; // Crescent or quarter
+    if (percent < 55) return "moon"; // Full moon
+    if (percent < 95) return "moon-outline"; // Quarter or crescent waning
+    
+    return "moon-outline";
+  }
+
+  // Hiển thị trạng thái loading hoặc lỗi
+  if (loading) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <SafeAreaView style={styles.container}>
+          <WeatherCard />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#6200EE" />
+            <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
+          </View>
+          <ChatBotButton />
+        </SafeAreaView>
+      </>
+    );
+  }
+  
+  if (error || !sunMoonData) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <SafeAreaView style={styles.container}>
+          <WeatherCard />
+          <View style={styles.loadingContainer}>
+            <Ionicons name="cloud-offline" size={60} color="#6200EE" />
+            <Text style={styles.errorText}>{error || 'Không thể tải dữ liệu'}</Text>
+            <TouchableOpacity 
+              style={styles.refreshButton} 
+              onPress={fetchSunMoonData}
+            >
+              <Ionicons name="refresh" size={20} color="#6200EE" />
+              <Text style={styles.refreshText}>Thử lại</Text>
+            </TouchableOpacity>
+          </View>
+          <ChatBotButton />
+        </SafeAreaView>
+      </>
+    );
   }
 
   return (
@@ -180,143 +107,143 @@ export default function SunAndMoonScreen() {
         <WeatherCard />
 
         {/* Sun and Moon Information */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#6200EE" />
-            <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
-          </View>
-        ) : (
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-            <View style={styles.infoContainer}>
-              <Text style={styles.sectionHeader}>Giờ vàng</Text>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.sectionHeader}>Giờ vàng</Text>
 
-              {/* Sun Information */}
-              <View style={styles.styleHour}>
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Mặt trời mọc</Text>
-                  <View style={styles.timeMoonSun}>
-                    <Clock />
-                    <Ionicons name="sunny-outline" size={30} color="#666" />
-                    <Text style={styles.timeValue}>{sunMoonData.sunrise}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Mặt trời lặn</Text>
-                  <View style={styles.timeMoonSun}>
-                    <Clock />
-                    <Ionicons
-                      name="partly-sunny-outline"
-                      size={30}
-                      color="#666"
-                    />
-                    <Text style={styles.timeValue}>{sunMoonData.sunset}</Text>
-                  </View>
+            {/* Sun Information */}
+            <View style={styles.styleHour}>
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Mặt trời mọc</Text>
+                <View style={styles.timeMoonSun}>
+                  <Clock />
+                  <Ionicons name="sunny-outline" size={30} color="#666" />
+                  <Text style={styles.timeValue}>{sunMoonData.sunrise}</Text>
                 </View>
               </View>
 
-              {/* Day Length Information */}
-              <View style={styles.styleHour}>
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Độ dài ngày</Text>
-                  <View style={styles.timeRow}>
-                    <View style={styles.lineChart}>
-                      <LinearGradient
-                        colors={['#FFD700', '#FF9500']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.gradientLine}
-                      />
-                    </View>
-                    <Text style={styles.timeValue}>{sunMoonData.dayLength}</Text>
-                  </View>
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Mặt trời lặn</Text>
+                <View style={styles.timeMoonSun}>
+                  <Clock />
+                  <Ionicons
+                    name="partly-sunny-outline"
+                    size={30}
+                    color="#666"
+                  />
+                  <Text style={styles.timeValue}>{sunMoonData.sunset}</Text>
                 </View>
+              </View>
+            </View>
 
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Độ dài đêm</Text>
-                  <View style={styles.timeRow}>
-                    <View style={styles.lineChart}>
-                      <LinearGradient
-                        colors={['#8E8E93', '#636366']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.gradientLine}
-                      />
-                    </View>
-                    <Text style={styles.timeValue}>
-                      {sunMoonData.nightLength}
+            {/* Day Length Information */}
+            <View style={styles.styleHour}>
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Độ dài ngày</Text>
+                <View style={styles.timeRow}>
+                  <View style={styles.lineChart}>
+                    <LinearGradient
+                      colors={['#FFD700', '#FF9500']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.gradientLine}
+                    />
+                  </View>
+                  <Text style={styles.timeValue}>{sunMoonData.dayLength}</Text>
+                </View>
+              </View>
+
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Độ dài đêm</Text>
+                <View style={styles.timeRow}>
+                  <View style={styles.lineChart}>
+                    <LinearGradient
+                      colors={['#8E8E93', '#636366']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.gradientLine}
+                    />
+                  </View>
+                  <Text style={styles.timeValue}>
+                    {sunMoonData.nightLength}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Moon Rise Information */}
+            <View style={styles.styleHour}>
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Mặt trăng mọc</Text>
+                <View style={styles.timeMoonSun}>
+                  <Clock />
+                  <View style={styles.lineChart}>
+                    <LinearGradient
+                      colors={['#C7C7CC', '#8E8E93']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.gradientLine}
+                    />
+                  </View>
+                  <Text style={styles.timeValue}>{sunMoonData.moonrise}</Text>
+                </View>
+              </View>
+
+              <View style={styles.styleColumn}>
+                <Text style={styles.sectionTitle}>Mặt trăng lặn</Text>
+                <View style={styles.timeMoonSun}>
+                  <Clock />
+                  <View style={styles.lineChart}>
+                    <LinearGradient
+                      colors={['#8E8E93', '#C7C7CC']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.gradientLine}
+                    />
+                  </View>
+                  <Text style={styles.timeValue}>{sunMoonData.moonset}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Moon Phase Information */}
+            <View style={styles.infoRow}>
+              <View style={styles.infoColumn}>
+                <Text style={styles.sectionTitle}>Pha mặt trăng</Text>
+                <View style={styles.moonPhaseContainer}>
+                  <View style={styles.moon}>
+                    <Ionicons name={getMoonPhaseIcon() as any} size={24} color="#8E8E93" />
+                  </View>
+                  <View style={styles.moonPhaseTextContainer}>
+                    <Text style={styles.moonPhaseText}>
+                      {sunMoonData.moonPhase}
+                    </Text>
+                    <Text style={styles.moonPhasePercentage}>
+                      {sunMoonData.moonPhasePercentage}
                     </Text>
                   </View>
                 </View>
               </View>
-
-              {/* Moon Rise Information */}
-              <View style={styles.styleHour}>
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Mặt trăng mọc</Text>
-                  <View style={styles.timeMoonSun}>
-                    <Clock />
-                    <View style={styles.lineChart}>
-                      <LinearGradient
-                        colors={['#C7C7CC', '#8E8E93']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.gradientLine}
-                      />
-                    </View>
-                    <Text style={styles.timeValue}>{sunMoonData.moonrise}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.styleColumn}>
-                  <Text style={styles.sectionTitle}>Mặt trăng lặn</Text>
-                  <View style={styles.timeMoonSun}>
-                    <Clock />
-                    <View style={styles.lineChart}>
-                      <LinearGradient
-                        colors={['#8E8E93', '#C7C7CC']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.gradientLine}
-                      />
-                    </View>
-                    <Text style={styles.timeValue}>{sunMoonData.moonset}</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Moon Phase Information */}
-              <View style={styles.infoRow}>
-                <View style={styles.infoColumn}>
-                  <Text style={styles.sectionTitle}>Pha mặt trăng</Text>
-                  <View style={styles.moonPhaseContainer}>
-                    <View style={styles.moon}>
-                      <Ionicons name={getMoonPhaseIcon() as any} size={24} color="#8E8E93" />
-                    </View>
-                    <View style={styles.moonPhaseTextContainer}>
-                      <Text style={styles.moonPhaseText}>
-                        {sunMoonData.moonPhase}
-                      </Text>
-                      <Text style={styles.moonPhasePercentage}>
-                        {sunMoonData.moonPhasePercentage}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-
-              {/* Pull to refresh hint */}
-              <TouchableOpacity 
-                style={styles.refreshButton} 
-                onPress={fetchSunMoonData}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="refresh" size={20} color="#6200EE" />
-                <Text style={styles.refreshText}>Làm mới dữ liệu</Text>
-              </TouchableOpacity>
             </View>
-          </ScrollView>
-        )}
+
+            {/* Location and Date */}
+            <View style={styles.locationContainer}>
+              <Ionicons name="location-outline" size={16} color="#666" />
+              <Text style={styles.locationText}>{sunMoonData.location}</Text>
+              <Text style={styles.dateText}>Ngày {sunMoonData.date}</Text>
+            </View>
+
+            {/* Refresh button */}
+            <TouchableOpacity 
+              style={styles.refreshButton} 
+              onPress={fetchSunMoonData}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="refresh" size={20} color="#6200EE" />
+              <Text style={styles.refreshText}>Làm mới dữ liệu</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
         {/* ChatBot Button */}
         <ChatBotButton />
@@ -340,6 +267,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#6200EE'
+  },
+  errorText: {
+    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 20,
+    color: '#F44336',
+    textAlign: 'center',
+    paddingHorizontal: 20
   },
   content: {
     flex: 1,
@@ -464,6 +399,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 4
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    padding: 8,
+    backgroundColor: '#f5f0ff',
+    borderRadius: 20
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 4,
+    marginRight: 8
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500'
   },
   refreshButton: {
     flexDirection: 'row',

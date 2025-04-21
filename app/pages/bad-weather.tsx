@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -7,21 +7,20 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ChatBotButton } from '@/components/hieunm/ChatBotButton'
-import { OpenWeatherMapService } from '@/services/api/openWeatherMapService'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Notifications from 'expo-notifications'
+import { AppState, AppStateStatus } from 'react-native'
+import { useBadWeather } from '@/hooks/useBadWeather'
 
 const { width } = Dimensions.get('window')
 const cardWidth = width * 0.44
-
-type colorArr = [string, string]
 
 // Cấu hình thông báo
 Notifications.setNotificationHandler({
@@ -33,58 +32,34 @@ Notifications.setNotificationHandler({
 })
 
 export default function BadWeatherScreen() {
-  const [loading, setLoading] = useState(true)
-  const [weatherData, setWeatherData] = useState({
-    airQuality: {
-      index: 0,
-      level: 'Đang tải...',
-      color: ['#4A90E2', '#D0021B']
-    },
-    uvIndex: {
-      value: 0,
-      level: 'Đang tải...',
-      color: ['#4A90E2', '#9013FE']
-    },
-    pressure: {
-      value: 0,
-      unit: 'hPa',
-      normal: true,
-      rotation: '0deg'
-    },
-    wind: {
-      speed: 0,
-      unit: 'km/h',
-      direction: 'B',
-      directionDeg: 0
-    },
-    rainfall: {
-      current: 0,
-      unit: 'mm',
-      forecast: 'Đang tải dự báo mưa...'
-    },
-    feelsLike: {
-      temperature: 0,
-      unit: '°',
-      description: 'Đang tải...'
-    },
-    humidity: {
-      value: 0,
-      unit: '%',
-      description: 'Đang tải...'
-    },
-    warnings: []
-  })
+  const {
+    weatherData,
+    loading,
+    error,
+    fetchWeatherData,
+    checkAndUpdateWeatherIfNeeded
+  } = useBadWeather()
 
   // Yêu cầu quyền gửi thông báo
   useEffect(() => {
     registerForPushNotificationsAsync()
   }, [])
 
-  // Tải dữ liệu thời tiết khi component được mount
+  // Theo dõi trạng thái ứng dụng để cập nhật dữ liệu khi mở lại
   useEffect(() => {
-    fetchWeatherData()
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    )
+    return () => subscription.remove()
   }, [])
-  
+
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
+    if (nextAppState === 'active') {
+      checkAndUpdateWeatherIfNeeded()
+    }
+  }
+
   // Hàm xin quyền gửi thông báo
   async function registerForPushNotificationsAsync() {
     if (Platform.OS === 'android') {
@@ -92,250 +67,60 @@ export default function BadWeatherScreen() {
         name: 'Weather Warnings',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
+        lightColor: '#FF231F7C'
+      })
     }
-    
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    
+
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+
     if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
     }
-    
+
     if (finalStatus !== 'granted') {
       Alert.alert(
         'Thông báo',
         'Bạn cần cấp quyền thông báo để nhận cảnh báo thời tiết xấu!',
         [{ text: 'OK' }]
-      );
-      return false;
+      )
+      return false
     }
-    
-    return true;
+
+    return true
   }
 
-  // Hàm gửi thông báo cảnh báo thời tiết
-  async function sendWeatherWarningNotification(warning: string) {
-    const hasPermission = await registerForPushNotificationsAsync();
-    
-    if (hasPermission) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '⚠️ Cảnh báo thời tiết',
-          body: warning,
-          data: { type: 'weather-warning' },
-        },
-        trigger: null // Gửi ngay lập tức
-      });
-    }
+  // Hiển thị trạng thái loading
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.loadingContainer]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ActivityIndicator size="large" color="#6200EE" />
+        <Text style={styles.loadingText}>Đang tải thông tin thời tiết...</Text>
+      </SafeAreaView>
+    )
   }
 
-  // Hàm phân tích dữ liệu thời tiết và tạo cảnh báo
-  const analyzeWeatherWarnings = (data: any) => {
-    const warnings = [];
-    
-    // Kiểm tra tốc độ gió
-    if (data.wind.speed > 20) {
-      warnings.push(`Cảnh báo gió mạnh: ${data.wind.speed}km/h. Hạn chế ra ngoài.`);
-    }
-    
-    // Kiểm tra chỉ số UV
-    if (data.uvIndex.value > 8) {
-      warnings.push(`Chỉ số UV rất cao (${data.uvIndex.value}). Tránh tiếp xúc trực tiếp với ánh nắng.`);
-    }
-    
-    // Kiểm tra lượng mưa
-    if (data.rainfall.current > 10) {
-      warnings.push(`Mưa to: ${data.rainfall.current}mm. Có thể gây ngập lụt cục bộ.`);
-    }
-    
-    // Kiểm tra chất lượng không khí
-    if (data.airQuality.index > 150) {
-      warnings.push(`Chất lượng không khí kém (${data.airQuality.index}). Hạn chế hoạt động ngoài trời.`);
-    }
-    
-    // Nếu có cảnh báo, gửi thông báo
-    if (warnings.length > 0) {
-      // Chỉ gửi thông báo cảnh báo đầu tiên
-      sendWeatherWarningNotification(warnings[0]);
-    }
-    
-    return warnings;
-  };
+  // Hiển thị thông báo lỗi
+  if (error || !weatherData) {
+    const errorMessage = error || 'Không thể tải dữ liệu thời tiết'
 
-  // Lấy dữ liệu thời tiết từ API
-  const fetchWeatherData = async () => {
-    try {
-      setLoading(true)
-      
-      // Lấy thành phố đã lưu từ lần trước (hoặc mặc định)
-      const savedCity = await AsyncStorage.getItem('lastCity') || 'Hanoi,vn'
-      
-      // Tạo instance của service
-      const weatherService = new OpenWeatherMapService()
-      
-      // Lấy dữ liệu thời tiết hiện tại
-      const currentWeather = await weatherService.getCurrentWeather(savedCity)
-      
-      // Giả lập lấy dữ liệu chất lượng không khí (trong API thực tế sẽ gọi endpoint riêng)
-      const aqi = Math.floor(Math.random() * 200); // Giả lập AQI ngẫu nhiên từ 0-200
-      
-      let aqiLevel = 'Tốt';
-      let aqiColors: colorArr = ['#4CAF50', '#8BC34A']; // Xanh lá - tốt
-      
-      if (aqi > 50 && aqi <= 100) {
-        aqiLevel = 'Trung bình';
-        aqiColors = ['#FFEB3B', '#FFC107']; // Vàng - trung bình
-      } else if (aqi > 100 && aqi <= 150) {
-        aqiLevel = 'Không tốt cho nhóm nhạy cảm';
-        aqiColors = ['#FF9800', '#F57C00']; // Cam - không tốt cho nhóm nhạy cảm
-      } else if (aqi > 150) {
-        aqiLevel = 'Không lành mạnh';
-        aqiColors = ['#F44336', '#D32F2F']; // Đỏ - không lành mạnh
-      }
-      
-      // Giả lập chỉ số UV (thực tế sẽ được lấy từ API)
-      const uv = Math.floor(currentWeather.temperature / 10 * 3); // Giả lập dựa trên nhiệt độ
-      
-      let uvLevel = 'Thấp';
-      let uvColors: colorArr = ['#4CAF50', '#8BC34A']; // Xanh lá - thấp
-      
-      if (uv > 2 && uv <= 5) {
-        uvLevel = 'Trung bình';
-        uvColors = ['#FFEB3B', '#FFC107']; // Vàng - trung bình
-      } else if (uv > 5 && uv <= 7) {
-        uvLevel = 'Cao';
-        uvColors = ['#FF9800', '#F57C00']; // Cam - cao
-      } else if (uv > 7) {
-        uvLevel = 'Rất cao';
-        uvColors = ['#F44336', '#D32F2F']; // Đỏ - rất cao
-      }
-      
-      // Chuyển đổi hướng gió từ độ sang hướng
-      const windDeg = currentWeather.windDeg; // Sử dụng trường windDeg đã thêm
-      let windDirection = 'B'; // Bắc là mặc định
-      
-      if (windDeg > 45 && windDeg <= 135) {
-        windDirection = 'Đ'; // Đông
-      } else if (windDeg > 135 && windDeg <= 225) {
-        windDirection = 'N'; // Nam
-      } else if (windDeg > 225 && windDeg <= 315) {
-        windDirection = 'T'; // Tây
-      }
-      
-      // Kiểm tra có mưa không
-      let rainfall = {
-        current: 0,
-        unit: 'mm',
-        forecast: 'Không có mưa trong 24h tới.'
-      };
-      
-      if (currentWeather.rain) {
-        rainfall.current = currentWeather.rain;
-        rainfall.forecast = `Dự kiến còn mưa ${Math.round(rainfall.current * 0.7)} mm trong 24h tới.`;
-      } else if (currentWeather.conditionMain && currentWeather.conditionMain.toLowerCase().includes('rain')) {
-        // Nếu không có dữ liệu mưa cụ thể nhưng mô tả thời tiết có mưa
-        rainfall.current = 0.5;
-        rainfall.forecast = 'Có thể có mưa nhẹ trong 24h tới.';
-      }
-      
-      // Mô tả cảm giác nhiệt
-      let feelsLikeDesc = 'Tương tự nhiệt độ thực tế.';
-      if (currentWeather.feelsLike > currentWeather.temperature + 2) {
-        feelsLikeDesc = 'Cảm giác nóng hơn nhiệt độ thực tế.';
-      } else if (currentWeather.feelsLike < currentWeather.temperature - 2) {
-        feelsLikeDesc = 'Cảm giác lạnh hơn nhiệt độ thực tế.';
-      }
-      
-      // Mô tả độ ẩm
-      let humidityDesc = 'Độ ẩm bình thường.';
-      if (currentWeather.humidity > 70) {
-        humidityDesc = 'Độ ẩm cao, cảm giác oi bức.';
-      } else if (currentWeather.humidity < 30) {
-        humidityDesc = 'Độ ẩm thấp, không khí khô.';
-      }
-      
-      // Kiểm tra áp suất
-      let pressureNormal = true;
-      let pressureRotation = '0deg';
-      
-      if (currentWeather.pressure && currentWeather.pressure < 1000) {
-        pressureNormal = false;
-        pressureRotation = '-45deg'; // Kim áp kế chỉ xuống khi áp suất thấp
-      } else if (currentWeather.pressure && currentWeather.pressure > 1020) {
-        pressureNormal = false;
-        pressureRotation = '45deg'; // Kim áp kế chỉ lên khi áp suất cao
-      }
-      
-      // Cập nhật dữ liệu
-      const updatedWeatherData = {
-        airQuality: {
-          index: aqi,
-          level: aqiLevel,
-          color: aqiColors
-        },
-        uvIndex: {
-          value: uv,
-          level: uvLevel,
-          color: uvColors
-        },
-        pressure: {
-          value: currentWeather.pressure || 1013, // Giá trị mặc định nếu không có dữ liệu
-          unit: 'hPa',
-          normal: pressureNormal,
-          rotation: pressureRotation
-        },
-        wind: {
-          speed: currentWeather.windSpeed,
-          unit: 'km/h',
-          direction: windDirection,
-          directionDeg: windDeg
-        },
-        rainfall: rainfall,
-        feelsLike: {
-          temperature: currentWeather.feelsLike,
-          unit: '°',
-          description: feelsLikeDesc
-        },
-        humidity: {
-          value: currentWeather.humidity,
-          unit: '%',
-          description: humidityDesc
-        },
-        warnings: []
-      };
-      
-      // Phân tích dữ liệu để tạo cảnh báo
-      const warnings = analyzeWeatherWarnings(updatedWeatherData);
-      updatedWeatherData.warnings = warnings;
-      
-      setWeatherData(updatedWeatherData);
-      
-      // Cache dữ liệu
-      await AsyncStorage.setItem('cachedBadWeatherData', JSON.stringify({
-        data: updatedWeatherData,
-        timestamp: Date.now()
-      }));
-      
-    } catch (error) {
-      console.error('Error fetching bad weather data:', error);
-      
-      // Thử tải dữ liệu cache nếu có lỗi
-      try {
-        const cachedData = await AsyncStorage.getItem('cachedBadWeatherData');
-        if (cachedData) {
-          const { data } = JSON.parse(cachedData);
-          setWeatherData(data);
-        }
-      } catch (cacheError) {
-        console.error('Error loading cached bad weather data:', cacheError);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    return (
+      <SafeAreaView style={[styles.container, styles.loadingContainer]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <Ionicons name="cloud-offline" size={60} color="#6200EE" />
+        <Text style={styles.errorText}>{errorMessage}</Text>
+        <TouchableOpacity
+          style={styles.refreshButton}
+          onPress={fetchWeatherData}
+        >
+          <Ionicons name="refresh" size={20} color="#6200EE" />
+          <Text style={styles.refreshText}>Thử lại</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    )
+  }
 
   return (
     <>
@@ -360,15 +145,17 @@ export default function BadWeatherScreen() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[
-                  styles.progressBar, 
-                  { width: `${Math.min(100, weatherData.airQuality.index / 3)}%` }
+                  styles.progressBar,
+                  {
+                    width: `${Math.min(100, weatherData.airQuality.index / 3)}%`
+                  }
                 ]}
               />
             </View>
           </View>
-          
+
           {/* Warnings Section */}
-          {weatherData.warnings.length > 0 && (
+          {weatherData.warnings && weatherData.warnings.length > 0 && (
             <View style={styles.warningsCard}>
               <View style={styles.cardHeader}>
                 <Ionicons name="warning-outline" size={20} color="#fff" />
@@ -376,7 +163,12 @@ export default function BadWeatherScreen() {
               </View>
               {weatherData.warnings.map((warning, index) => (
                 <View key={index} style={styles.warningItem}>
-                  <Ionicons name="alert-circle" size={16} color="#FFF" style={styles.warningIcon} />
+                  <Ionicons
+                    name="alert-circle"
+                    size={16}
+                    color="#FFF"
+                    style={styles.warningIcon}
+                  />
                   <Text style={styles.warningText}>{warning}</Text>
                 </View>
               ))}
@@ -404,7 +196,9 @@ export default function BadWeatherScreen() {
                   end={{ x: 1, y: 0 }}
                   style={[
                     styles.smallProgressBar,
-                    { width: `${Math.min(100, weatherData.uvIndex.value * 10)}%` }
+                    {
+                      width: `${Math.min(100, weatherData.uvIndex.value * 10)}%`
+                    }
                   ]}
                 />
               </View>
@@ -421,11 +215,11 @@ export default function BadWeatherScreen() {
               </Text>
               <View style={styles.pressureGauge}>
                 <View style={styles.gaugeCircle}>
-                  <View 
+                  <View
                     style={[
                       styles.gaugeIndicator,
                       { transform: [{ rotate: weatherData.pressure.rotation }] }
-                    ]} 
+                    ]}
                   />
                 </View>
               </View>
@@ -442,11 +236,15 @@ export default function BadWeatherScreen() {
                 <View style={styles.directionRow}>
                   <Text style={styles.directionText}>T</Text>
                   <View style={styles.compassCircle}>
-                    <View 
+                    <View
                       style={[
                         styles.compassNeedle,
-                        { transform: [{ rotate: `${weatherData.wind.directionDeg}deg` }] }
-                      ]} 
+                        {
+                          transform: [
+                            { rotate: `${weatherData.wind.directionDeg}deg` }
+                          ]
+                        }
+                      ]}
                     />
                   </View>
                   <Text style={styles.directionText}>Đ</Text>
@@ -503,10 +301,10 @@ export default function BadWeatherScreen() {
               </Text>
             </View>
           </View>
-          
+
           {/* Refresh Button */}
-          <TouchableOpacity 
-            style={styles.refreshButton} 
+          <TouchableOpacity
+            style={styles.refreshButton}
             onPress={fetchWeatherData}
             activeOpacity={0.7}
           >
@@ -526,6 +324,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f0ff'
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 15,
+    color: '#6200EE'
+  },
+  errorText: {
+    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 20,
+    color: '#F44336',
+    textAlign: 'center',
+    paddingHorizontal: 20
   },
   scrollView: {
     flex: 1,
@@ -695,8 +510,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8
   },
-  
-  // Thêm styles mới cho các tính năng mới
+
+  // Styles cho các tính năng mới
   warningsCard: {
     backgroundColor: 'rgba(244, 67, 54, 0.8)', // Màu đỏ cho cảnh báo
     borderRadius: 16,
