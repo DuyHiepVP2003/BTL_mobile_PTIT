@@ -48,7 +48,8 @@
       "$oid": "67fd23a384ff6e45f6eb9816"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "windy"
 },
 {
   "_id": {
@@ -98,7 +99,8 @@
       "$oid": "67fd23a384ff6e45f6eb9816"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "hot"
 },
 {
   "_id": {
@@ -148,7 +150,8 @@
       "$oid": "67fd23a384ff6e45f6eb9816"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "rainy"
 },
 {
   "_id": {
@@ -198,7 +201,8 @@
       "$oid": "67fd23a384ff6e45f6eb981a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "rainy"
 },
 {
   "_id": {
@@ -248,7 +252,8 @@
       "$oid": "67fd23a384ff6e45f6eb981a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "windy"
 },
 {
   "_id": {
@@ -298,7 +303,8 @@
       "$oid": "67fd23a384ff6e45f6eb981e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "foggy"
 },
 {
   "_id": {
@@ -348,7 +354,8 @@
       "$oid": "67fd23a384ff6e45f6eb981e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cloudy"
 },
 {
   "_id": {
@@ -398,7 +405,8 @@
       "$oid": "67fd23a384ff6e45f6eb981e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cloudy"
 },
 {
   "_id": {
@@ -448,7 +456,8 @@
       "$oid": "67fd23a384ff6e45f6eb981e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cold"
 },
 {
   "_id": {
@@ -498,7 +507,8 @@
       "$oid": "67fd23a384ff6e45f6eb9822"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "hot"
 },
 {
   "_id": {
@@ -548,7 +558,8 @@
       "$oid": "67fd23a384ff6e45f6eb9822"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "rainy"
 },
 {
   "_id": {
@@ -598,7 +609,8 @@
       "$oid": "67fd23a384ff6e45f6eb9822"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "windy"
 },
 {
   "_id": {
@@ -648,7 +660,8 @@
       "$oid": "67fd23a384ff6e45f6eb9826"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "hot"
 },
 {
   "_id": {
@@ -698,7 +711,8 @@
       "$oid": "67fd23a384ff6e45f6eb9826"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "windy"
 },
 {
   "_id": {
@@ -748,7 +762,8 @@
       "$oid": "67fd23a384ff6e45f6eb9826"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "sunny"
 },
 {
   "_id": {
@@ -798,7 +813,8 @@
       "$oid": "67fd23a384ff6e45f6eb982a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "foggy"
 },
 {
   "_id": {
@@ -848,7 +864,8 @@
       "$oid": "67fd23a384ff6e45f6eb982e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cloudy"
 },
 {
   "_id": {
@@ -898,7 +915,8 @@
       "$oid": "67fd23a384ff6e45f6eb9832"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "foggy"
 },
 {
   "_id": {
@@ -948,7 +966,8 @@
       "$oid": "67fd23a384ff6e45f6eb9836"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "hot"
 },
 {
   "_id": {
@@ -998,7 +1017,8 @@
       "$oid": "67fd23a384ff6e45f6eb983a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cold"
 },
 {
   "_id": {
@@ -1048,7 +1068,8 @@
       "$oid": "67fd23a384ff6e45f6eb983e"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cloudy"
 },
 {
   "_id": {
@@ -1098,7 +1119,8 @@
       "$oid": "67fd23a384ff6e45f6eb9842"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "hot"
 },
 {
   "_id": {
@@ -1148,7 +1170,8 @@
       "$oid": "67fd23a384ff6e45f6eb9846"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cloudy"
 },
 {
   "_id": {
@@ -1198,7 +1221,8 @@
       "$oid": "67fd23a384ff6e45f6eb984a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "rainy"
 },
 {
   "_id": {
@@ -1248,7 +1272,8 @@
       "$oid": "67fd23a384ff6e45f6eb9852"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "windy"
 },
 {
   "_id": {
@@ -1298,5 +1323,6 @@
       "$oid": "67fd23a384ff6e45f6eb985a"
     }
   ],
-  "__v": 0
+  "__v": 0,
+  "weatherCondition": "cold"
 }]
