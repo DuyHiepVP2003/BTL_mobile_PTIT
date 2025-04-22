@@ -16,6 +16,7 @@ import Song from "@/components/music-recomment/Song";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useWeather } from "@/hooks/useWeather";
+import { useRouter } from "expo-router";
 
 const tabBar = [
   {
@@ -38,10 +39,16 @@ const tabBar = [
 export default function TabTwoScreen() {
   const [activeTab, setActiveTab] = useState("");
   const { weather } = useWeather();
+  const router = useRouter();
   return (
     <View style={tw`bg-[#F6EDFF] flex-1`}>
       <View style={tw`bg-[#E1D3FA] p-[18px]`}>
-        <View style={tw`flex-row justify-between items-center mt-[18px]`}>
+        <View style={tw`flex-row items-center gap-2 mt-[18px]`}>
+          {activeTab !== "" && (
+            <TouchableOpacity onPress={() => setActiveTab("")}>
+              <Ionicons name="arrow-back" size={24} color="#333" />
+            </TouchableOpacity>
+          )}
           <Text style={tw`text-[18px] leading-[28px] text-bold`}>
             {weather?.location?.name}, {weather?.location?.country}
           </Text>
@@ -75,7 +82,7 @@ export default function TabTwoScreen() {
         {activeTab === "playlist" && <Playlists />}
         {activeTab === "artist" && <Artist />}
         {activeTab === "song" && <Song />}
-        {activeTab === "" && <Base weather={weather}/>}
+        {activeTab === "" && <Base weather={weather} />}
       </ScrollView>
     </View>
   );

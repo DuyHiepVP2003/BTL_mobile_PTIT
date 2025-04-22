@@ -1,9 +1,17 @@
 import CustomTabList from "@/components/music-recomment/CustomTabList";
 import { useAlbums } from "@/hooks/useAlbums";
 import { useArtistDetail } from "@/hooks/useArtist";
+import { Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 
 import tw from "twrnc";
 
@@ -44,7 +52,13 @@ export default function TabTwoScreen() {
   return (
     <>
       <View style={tw`bg-[#F6EDFF]`}>
-        <View style={tw`bg-[#ffffff] py-[30px] rounded-b-[54px]`}>
+        <View style={tw`bg-[#ffffff] py-[50px] rounded-b-[54px]`}>
+          <TouchableOpacity
+            style={tw`absolute top-[50px] left-[20px]`}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
           <View style={tw`flex justify-center items-center`}>
             <Text style={tw`text-[16px] font-semibold text-[#383838]`}>
               Profile

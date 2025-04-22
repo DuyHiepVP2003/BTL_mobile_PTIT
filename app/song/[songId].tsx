@@ -1,6 +1,13 @@
 import { useAlbums } from "@/hooks/useAlbums";
 import { useRoute } from "@react-navigation/native";
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import Slider from "@react-native-community/slider";
 import { Audio } from "expo-av";
 import tw from "twrnc";
@@ -8,6 +15,7 @@ import { useTrackDetail } from "@/hooks/useTracks";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
+import { Ionicons } from "@expo/vector-icons";
 export default function TabTwoScreen() {
   const { play, pause, stop, isPlaying, duration, position } = useAudioPlayer();
   const route = useRoute();
@@ -26,6 +34,12 @@ export default function TabTwoScreen() {
         <View
           style={tw`text-[#222222] w-full flex items-center text-[20px] p-[18px] py-[50px] bg-[#F6EDFF]`}
         >
+          <TouchableOpacity
+            style={tw`absolute top-[50px] left-[20px]`}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
           <Text style={tw`text-center text-[18px] font-bold`}>
             Bài hát hiện tại
           </Text>

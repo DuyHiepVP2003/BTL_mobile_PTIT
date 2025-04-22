@@ -2,12 +2,20 @@ import CustomTabList from "@/components/music-recomment/CustomTabList";
 import { useAlbums, useAlbumsDetail } from "@/hooks/useAlbums";
 import { useArtistDetail } from "@/hooks/useArtist";
 import { useRoute } from "@react-navigation/native";
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import Slider from "@react-native-community/slider";
 
 import tw from "twrnc";
 import { useTrackDetail, useTrackDetailByAlbumId } from "@/hooks/useTracks";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 export default function TabTwoScreen() {
   const route = useRoute();
   const { albumId } = route.params as { albumId: string };
@@ -20,6 +28,12 @@ export default function TabTwoScreen() {
         <View
           style={tw`text-[#222222] text-[20px] w-full flex items-center px-[18px] pt-[50px] bg-[#F6EDFF]`}
         >
+          <TouchableOpacity
+            style={tw`absolute top-[50px] left-[20px]`}
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
           <Text style={tw`text-center text-[18px] font-bold`}>Album</Text>
           <Image
             source={{ uri: album?.images[0].url }}
