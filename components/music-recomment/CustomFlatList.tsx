@@ -1,25 +1,33 @@
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import tw from "twrnc";
+import { navigate } from "expo-router/build/global-state/routing";
+import { useRouter } from "expo-router";
 
 type CustomFlatListProps = {
   data: any;
   horizontal?: boolean;
   imageCircle?: boolean;
+  navigate?: boolean;
 };
 
 export default function CustomFlatList({
   data,
   horizontal,
   imageCircle,
+  navigate,
 }: CustomFlatListProps) {
+  const router = useRouter();
   return (
     <FlatList
       data={data}
       horizontal={horizontal}
       showsHorizontalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={tw.style("mr-[8px]")}>
+        <Pressable
+          style={tw.style("mr-[8px]")}
+          onPress={navigate ? () => router.navigate(item?.navigate) : undefined}
+        >
           <View style={tw.style("w-full mx-auto")}>
             <Image
               source={{ uri: item?.image }}
@@ -42,7 +50,7 @@ export default function CustomFlatList({
           >
             {item?.album}
           </Text>
-        </View>
+        </Pressable>
       )}
       keyExtractor={(item) => String(item?.id)}
     />

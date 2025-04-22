@@ -74,9 +74,11 @@ const Base = ({ weather }: any) => {
             name: item?.name,
             album: item?.genres[0],
             image: item?.images[0]?.url,
+            navigate: `/album/${item?._id}`,
           };
         })}
         horizontal
+        navigate
       />
       <View style={styles.titleContainer}>
         <Text>Ca sĩ</Text>
@@ -88,10 +90,12 @@ const Base = ({ weather }: any) => {
             name: item?.name,
             album: item?.genres[0],
             image: item?.images[0]?.url,
+            navigate: `/singer/${item?._id}`,
           };
         })}
         horizontal
         imageCircle
+        navigate
       />
       {/* <View style={styles.titleContainer}>
         <Text>Ca khúc</Text>

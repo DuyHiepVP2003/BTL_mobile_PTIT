@@ -9,15 +9,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Slider from "@react-native-community/slider";
-import { Audio } from "expo-av";
 import tw from "twrnc";
 import { useTrackDetail } from "@/hooks/useTracks";
 import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
 import { Ionicons } from "@expo/vector-icons";
 export default function TabTwoScreen() {
-  const { play, pause, stop, isPlaying, duration, position } = useAudioPlayer();
+  const { play, pause, seekTo, isPlaying, duration, position } =
+    useAudioPlayer();
   const route = useRoute();
   const router = useRouter();
   const { songId } = route.params as { songId: string };
@@ -51,7 +50,7 @@ export default function TabTwoScreen() {
           <Text style={tw`text-[18px] mt-3 font-bold`}>{track?.name}</Text>
           <Text style={tw`text-[16px] mt-3`}>{track?.artists[0]?.name}</Text>
           <View style={tw`px-4 mt-6`}>
-            <Slider
+            {/* <Slider
               style={tw`w-full h-6`}
               minimumValue={0}
               maximumValue={duration}
@@ -59,30 +58,24 @@ export default function TabTwoScreen() {
               minimumTrackTintColor="#8E05C2"
               maximumTrackTintColor="#d3d3d3"
               thumbTintColor="#8E05C2"
-            />
-            <View style={tw`flex-row justify-between mt-[-4px]`}>
-              <Text style={tw`text-xs text-gray-600`}>
-                {formatTime(position)}
-              </Text>
-              <Text style={tw`text-xs text-gray-600`}>
-                {formatTime(duration)}
-              </Text>
-            </View>
+            /> */}
+            <View style={tw`flex-row justify-between mt-[-4px]`}></View>
             <View
               style={tw`flex-row justify-center items-center gap-[30px] mt-[30px]`}
             >
-              <Image
-                source={require("@/assets/images/pre-song-icon.png")}
-                style={tw.style("rounded-md")}
-                resizeMode="cover"
-              />
+              <Text style={tw`text-xs text-gray-600`}>
+                {formatTime(position)}
+              </Text>
+              <Pressable onPress={() => seekTo(Math.max(position - 10, 0))}>
+                <Image
+                  source={require("@/assets/images/pre-song-icon.png")}
+                  style={tw.style("rounded-md")}
+                  resizeMode="cover"
+                />
+              </Pressable>
               <Pressable
                 onPress={() => {
-                  isPlaying
-                    ? pause()
-                    : play(
-                        "https://res.cloudinary.com/dsgiqi6bg/video/upload/v1745168840/gcwrrmgwdlb4ky09rciy.mp3"
-                      );
+                  isPlaying ? pause() : play(track?.uri);
                 }}
                 style={tw`bg-[#E1D3FA] flex justify-center items-center p-[20px] rounded-full`}
               >
@@ -96,11 +89,18 @@ export default function TabTwoScreen() {
                   resizeMode="cover"
                 />
               </Pressable>
-              <Image
-                source={require("@/assets/images/next-song-icon.png")}
-                style={tw.style("rounded-md")}
-                resizeMode="cover"
-              />
+              <Pressable
+                onPress={() => seekTo(Math.min(position + 10, duration))}
+              >
+                <Image
+                  source={require("@/assets/images/next-song-icon.png")}
+                  style={tw.style("rounded-md")}
+                  resizeMode="cover"
+                />
+              </Pressable>
+              <Text style={tw`text-xs text-gray-600`}>
+                {formatTime(duration)}
+              </Text>
             </View>
           </View>
         </View>
