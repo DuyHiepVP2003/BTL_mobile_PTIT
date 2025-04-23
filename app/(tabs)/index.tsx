@@ -92,13 +92,31 @@ export default function HomeScreen() {
 
       const data = await response.json();
       
-      // Tính toán sự thay đổi (giả lập vì API không cung cấp trực tiếp)
-      const windChange = (data.current.wind_kph - data.forecast.forecastday[0].hour[0].wind_kph).toFixed(1);
-      const pressureChange = (data.current.pressure_mb - data.forecast.forecastday[0].hour[0].pressure_mb).toFixed(0);
-      const rainChange = ((data.forecast.forecastday[0].day.daily_chance_of_rain - 
-                          data.forecast.forecastday[1].day.daily_chance_of_rain)).toFixed(0);
-      const uvChange = (data.current.uv - 3).toFixed(1);
-
+      // Tính toán sự thay đổi giữa hiện tại và trung bình trong ngày hôm nay
+      // Tính giá trị trung bình của gió trong ngày hôm nay
+      const avgWindToday = data.forecast.forecastday[0].hour.reduce(
+        (sum: number, hour: any) => sum + hour.wind_kph, 0
+      ) / 24;
+      
+      // Tính giá trị trung bình của áp suất trong ngày hôm nay
+      const avgPressureToday = data.forecast.forecastday[0].hour.reduce(
+        (sum: number, hour: any) => sum + hour.pressure_mb, 0
+      ) / 24;
+      
+      // Tính giá trị trung bình của chỉ số UV trong ngày hôm nay (từ các giờ có ánh sáng)
+      const dayHours = data.forecast.forecastday[0].hour.filter((hour: any) => 
+        new Date(hour.time).getHours() >= 6 && new Date(hour.time).getHours() <= 18
+      );
+      const avgUvToday = dayHours.reduce(
+        (sum: number, hour: any) => sum + hour.uv, 0
+      ) / dayHours.length;
+      
+      // Tính toán sự thay đổi so với trung bình
+      const windChange = (data.current.wind_kph - avgWindToday).toFixed(1);
+      const pressureChange = (data.current.pressure_mb - avgPressureToday).toFixed(0);
+      const rainChange = (data.forecast.forecastday[0].day.daily_chance_of_rain - 
+                          data.forecast.forecastday[0].day.daily_chance_of_rain / 2).toFixed(0);
+      const uvChange = (data.current.uv - avgUvToday).toFixed(1);
       // Format dữ liệu thời tiết
       const formattedData: WeatherData = {
         location: `${data.location.name}, ${data.location.country}`,

@@ -95,7 +95,7 @@ export default function RainDetailsScreen() {
       const minRain = Math.min(...rainValues);
       const maxRain = Math.max(...rainValues);
       
-      // Find peak hour
+      // Tìm giờ có lượng mưa cao nhất
       const peakHourIndex = rainValues.indexOf(maxRain);
       const peakHour = peakHourIndex >= 0 ? peakHourIndex : currentHour;
       
@@ -209,7 +209,7 @@ export default function RainDetailsScreen() {
     const lastX = paddingHorizontal + ((hourlyData.length - 1) * (graphWidth / (hourlyData.length - 1)));
     areaPathData += ` L ${lastX} ${paddingVertical + graphHeight} Z`;
     
-    // Draw horizontal grid lines
+    // Draw grid lines
     const gridLines = [0, 25, 50, 75, 100].map((value, index) => {
       const y = paddingVertical + graphHeight - (value / maxValue * graphHeight);
       return (
@@ -235,7 +235,6 @@ export default function RainDetailsScreen() {
     return (
       <View style={{ marginVertical: 10 }}>
         <Svg width={chartWidth} height={chartHeight}>
-          {/* Definitions for gradients */}
           <Defs>
             <SvgGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor="#6a3093" stopOpacity="0.6" />
@@ -414,21 +413,7 @@ export default function RainDetailsScreen() {
             <Text style={styles.infoValue}>{currentRainChance}<Text style={styles.percentSymbol}>%</Text></Text>
             <View style={styles.rainIconContainer}>
               <MaterialCommunityIcons name="weather-rainy" size={60} color="#6a3093" />
-              <View style={styles.rainDrops}>
-                {[...Array(5)].map((_, i) => (
-                  <View 
-                    key={i} 
-                    style={[
-                      styles.rainDrop, 
-                      { 
-                        left: 10 + (i * 10), 
-                        animationDelay: `${i * 0.2}s`,
-                        opacity: 0.7 - (i * 0.1)
-                      }
-                    ]} 
-                  />
-                ))}
-              </View>
+              
             </View>
           </View>
         </View>

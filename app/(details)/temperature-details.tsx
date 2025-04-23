@@ -19,11 +19,6 @@ interface HourlyForecast {
   icon: string;
 }
 
-interface DailyForecast {
-  day: string;
-  temp: number;
-}
-
 interface SunEvent {
   name: string;
   time: string;
@@ -41,9 +36,7 @@ export default function TemperatureDetailsScreen() {
   const [feelsLike, setFeelsLike] = useState(0);
   const [location, setLocation] = useState('Đang tải...');
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
-  const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
   const [sunEvents, setSunEvents] = useState<SunEvent[]>([]);
-  const [currentDayIndex, setCurrentDayIndex] = useState(0);
   
   // Fetch weather data on component mount
   useEffect(() => {
@@ -80,16 +73,17 @@ export default function TemperatureDetailsScreen() {
       setCurrentTemp(Math.round(data.current.temp_c));
       setFeelsLike(Math.round(data.current.feelslike_c));
       
-      // Process hourly forecast data (next 5 hours)
+      // Process hourly forecast data (next 12 hours)
       const now = new Date();
       const currentHour = now.getHours();
       
+      // Lấy dữ liệu 12 giờ tiếp theo từ API
       const processedHourlyData = data.forecast.forecastday[0].hour
         .filter((hour: any) => {
           const hourTime = new Date(hour.time).getHours();
           return hourTime >= currentHour;
         })
-        .slice(0, 5)
+        .slice(0, 12)
         .map((hour: any) => {
           const hourTime = new Date(hour.time).getHours();
           const ampm = hourTime >= 12 ? 'PM' : 'AM';
@@ -97,14 +91,16 @@ export default function TemperatureDetailsScreen() {
           return {
             time: `${hour12}${ampm}`,
             temp: Math.round(hour.temp_c),
-            icon: getWeatherIconName(hour.condition.code)
+            icon: getWeatherIconName(hour.condition.code),
+            hour: hourTime // Thêm giờ dạng 24h để dễ sử dụng cho biểu đồ
           };
         });
       
-      if (processedHourlyData.length < 5 && data.forecast.forecastday.length > 1) {
+      // Nếu không đủ 12 giờ, lấy thêm từ ngày tiếp theo
+      if (processedHourlyData.length < 12 && data.forecast.forecastday.length > 1) {
         // Add hours from next day if needed
         const nextDayHours = data.forecast.forecastday[1].hour
-          .slice(0, 5 - processedHourlyData.length)
+          .slice(0, 12 - processedHourlyData.length)
           .map((hour: any) => {
             const hourTime = new Date(hour.time).getHours();
             const ampm = hourTime >= 12 ? 'PM' : 'AM';
@@ -112,7 +108,8 @@ export default function TemperatureDetailsScreen() {
             return {
               time: `${hour12}${ampm}`,
               temp: Math.round(hour.temp_c),
-              icon: getWeatherIconName(hour.condition.code)
+              icon: getWeatherIconName(hour.condition.code),
+              hour: hourTime // Thêm giờ dạng 24h
             };
           });
         
@@ -120,23 +117,6 @@ export default function TemperatureDetailsScreen() {
       }
       
       setHourlyForecast(processedHourlyData);
-      
-      // Process daily forecast data
-      const processedDailyData = data.forecast.forecastday.map((day: any) => {
-        const date = new Date(day.date);
-        const dayNames = ['CN', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-        return {
-          day: dayNames[date.getDay()],
-          temp: Math.round(day.day.avgtemp_c)
-        };
-      });
-      
-      setDailyForecast(processedDailyData);
-      
-      // Find current day index
-      const today = new Date();
-      const currentDay = today.getDay();
-      setCurrentDayIndex(0); // Luôn hiển thị ngày đầu tiên là ngày hiện tại
       
       // Process sun events
       try {
@@ -194,23 +174,6 @@ export default function TemperatureDetailsScreen() {
     }
   };
   
-  // Convert 12-hour time format to 24-hour
-  const convertTo24Hour = (time12h: string) => {
-    const [time, modifier] = time12h.split(' ');
-    let [hours, minutes] = time.split(':');
-    
-    let hoursNum = parseInt(hours, 10);
-    
-    if (modifier === 'PM' && hoursNum < 12) {
-      hoursNum += 12;
-    }
-    if (modifier === 'AM' && hoursNum === 12) {
-      hoursNum = 0;
-    }
-    
-    return { hours: hoursNum, minutes: parseInt(minutes, 10) };
-  };
-  
   // Calculate time ago or time until
   const getTimeAgo = (now: Date, eventTime: Date) => {
     const diffMs = eventTime.getTime() - now.getTime();
@@ -242,8 +205,37 @@ export default function TemperatureDetailsScreen() {
   };
 
   // Render custom temperature chart
+  // Add this missing function for sun event time descriptions
+  const getSunEventTimeDescription = (timeStr: string): string => {
+    try {
+      // dl trả về vd 6:00 AM 
+      const now = new Date();
+      const [time, modifier] = timeStr.split(' ');
+      const [hours, minutes] = time.split(':');
+      
+      let eventHour = parseInt(hours, 10);
+      const eventMinutes = parseInt(minutes, 10);
+      
+      if (modifier === 'PM' && eventHour < 12) {
+        eventHour += 12;
+      }
+      if (modifier === 'AM' && eventHour === 12) {
+        eventHour = 0;
+      }
+      
+      const eventDate = new Date();
+      eventDate.setHours(eventHour, eventMinutes, 0);
+      
+      return getTimeAgo(now, eventDate);
+    } catch (err) {
+      console.error('Error parsing sun event time:', err);
+      return 'Không xác định';
+    }
+  };
+  
+  // Fix the renderTemperatureChart function to not use await directly
   const renderTemperatureChart = () => {
-    if (dailyForecast.length === 0) {
+    if (hourlyForecast.length === 0) {
       return null;
     }
     
@@ -252,34 +244,45 @@ export default function TemperatureDetailsScreen() {
     const paddingHorizontal = 20;
     const paddingVertical = 20;
     const graphWidth = chartWidth - (paddingHorizontal * 2);
-    const graphHeight = chartHeight - (paddingVertical * 2) - 20; // Thêm không gian cho nhãn ngày
+    const graphHeight = chartHeight - (paddingVertical * 2) - 10; // Thêm không gian cho nhãn giờ
+    
+    // Extract hourly temperature data for the chart
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Sử dụng trực tiếp dữ liệu từ hourlyForecast
+    const hourlyData = hourlyForecast.map(item => ({
+      hour: item.hour,
+      temp: item.temp
+    }));
     
     // Find min and max values for scaling
-    const temps = dailyForecast.map(day => day.temp);
-    const minTemp = Math.min(...temps) - 5; // Biên thấp = nhiệt độ thấp nhất - 10
-    const maxTemp = Math.max(...temps) + 5; // Biên cao = nhiệt độ cao nhất + 10
+    const temps = hourlyData.map(hour => hour.temp);
+    const minTemp = Math.min(...temps) - 2; // Biên thấp = nhiệt độ thấp nhất - 2
+    const maxTemp = Math.max(...temps) + 2; // Biên cao = nhiệt độ cao nhất + 2
     const range = maxTemp - minTemp;
     
     // Calculate points for the path
     let pathData = '';
-    const points = dailyForecast.map((day, index) => {
-      const x = paddingHorizontal + (index * (graphWidth / (dailyForecast.length - 1)));
+    const points = hourlyData.map((hourData, index) => {
+      // Tính toán vị trí X dựa trên khoảng thời gian 12 giờ
+      const x = paddingHorizontal + ((index / (hourlyData.length - 1)) * graphWidth);
       // Invert Y coordinate (SVG 0,0 is top-left)
-      const y = paddingVertical + graphHeight - ((day.temp - minTemp) / range * graphHeight);
+      const y = paddingVertical + graphHeight - ((hourData.temp - minTemp) / range * graphHeight);
       if (index === 0) {
         pathData = `M ${x} ${y}`;
       } else {
         // Use bezier curves for smoother lines
-        const prevDay = dailyForecast[index - 1];
-        const prevX = paddingHorizontal + ((index - 1) * (graphWidth / (dailyForecast.length - 1)));
-        const prevY = paddingVertical + graphHeight - ((prevDay.temp - minTemp) / range * graphHeight);
+        const prevHour = hourlyData[index - 1];
+        const prevX = paddingHorizontal + (((index - 1) / (hourlyData.length - 1)) * graphWidth);
+        const prevY = paddingVertical + graphHeight - ((prevHour.temp - minTemp) / range * graphHeight);
         
         const cpX1 = prevX + (x - prevX) / 2;
         const cpX2 = prevX + (x - prevX) / 2;
         
         pathData += ` C ${cpX1} ${prevY}, ${cpX2} ${y}, ${x} ${y}`;
       }
-      return { x, y, temp: day.temp, day: day.day };
+      return { x, y, temp: hourData.temp, hour: hourData.hour };
     });
     
     // Tính các giá trị nhiệt độ cho grid lines
@@ -319,7 +322,7 @@ export default function TemperatureDetailsScreen() {
       return (
         <SvgText
           key={`label-${index}`}
-          x={paddingHorizontal - 5}
+          x={paddingHorizontal - 7}
           y={y + 4}
           fontSize="10"
           fill="#666"
@@ -330,12 +333,24 @@ export default function TemperatureDetailsScreen() {
       );
     });
     
-    // Current day marker
-    const currentX = paddingHorizontal + (currentDayIndex * (graphWidth / (dailyForecast.length - 1)));
-    const currentY = paddingVertical + graphHeight - ((dailyForecast[currentDayIndex].temp - minTemp) / range * graphHeight);
+    // Current hour marker 
+    const currentHourIndex = hourlyData.findIndex(data => data.hour === currentHour);
+    let currentX, currentY;
+    let currentHourData;
+    
+    if (currentHourIndex >= 0) {
+      currentX = paddingHorizontal + ((currentHourIndex / (hourlyData.length - 1)) * graphWidth);
+      currentHourData = hourlyData[currentHourIndex];
+      currentY = paddingVertical + graphHeight - ((currentHourData.temp - minTemp) / range * graphHeight);
+    } else {
+      // Nếu không tìm thấy giờ hiện tại trong dữ liệu, sử dụng giờ đầu tiên
+      currentX = paddingHorizontal;
+      currentHourData = hourlyData[0];
+      currentY = paddingVertical + graphHeight - ((currentHourData.temp - minTemp) / range * graphHeight);
+    }
     
     return (
-      <View style={{ marginVertical: 10 }}>
+      <View style={{ marginVertical: 5 }}>
         <Svg width={chartWidth} height={chartHeight}>
           {/* Background */}
           <Rect
@@ -361,17 +376,6 @@ export default function TemperatureDetailsScreen() {
             strokeWidth="2.5"
           />
           
-          {/* Current day vertical line */}
-          <Line
-            x1={currentX}
-            y1={paddingVertical}
-            x2={currentX}
-            y2={paddingVertical + graphHeight}
-            stroke="#6a3093"
-            strokeWidth="1.5"
-            strokeDasharray="5,5"
-          />
-          
           {/* Current point */}
           <Circle
             cx={currentX}
@@ -382,34 +386,20 @@ export default function TemperatureDetailsScreen() {
             strokeWidth="2"
           />
           
-          {/* Day labels - Hiển thị ngày và ngày tháng */}
-          {dailyForecast.map((day, index) => {
-            const x = paddingHorizontal + (index * (graphWidth / (dailyForecast.length - 1)));
-            // Tách nhãn ngày thành hai dòng
-            const dayParts = day.day.split('\n');
+          {/* Hour labels */}
+          {hourlyData.filter((_, i) => i % 3 === 0 || i === hourlyData.length - 1).map((hourData, index) => {
+            const x = paddingHorizontal + ((hourlyData.indexOf(hourData) / (hourlyData.length - 1)) * graphWidth);
             return (
-              <>
-                <SvgText
-                  key={`day-${index}`}
-                  x={x}
-                  y={chartHeight - 20}
-                  fontSize="10"
-                  fill="#333"
-                  textAnchor="middle"
-                >
-                  {dayParts[0]}
-                </SvgText>
-                <SvgText
-                  key={`date-${index}`}
-                  x={x}
-                  y={chartHeight - 8}
-                  fontSize="9"
-                  fill="#666"
-                  textAnchor="middle"
-                >
-                  {dayParts[1]}
-                </SvgText>
-              </>
+              <SvgText
+                key={`hour-${index}`}
+                x={x}
+                y={chartHeight - 8}
+                fontSize="10"
+                fill="#333"
+                textAnchor="middle"
+              >
+                {hourData.hour}
+              </SvgText>
             );
           })}
           
@@ -429,9 +419,11 @@ export default function TemperatureDetailsScreen() {
             fontWeight="bold"
             textAnchor="middle"
           >
-            {dailyForecast[currentDayIndex].temp}°
+            {currentHourData.temp}°
           </SvgText>
         </Svg>
+        
+        <Text style={styles.chartXLabel}>giờ</Text>
       </View>
     );
   };
@@ -510,7 +502,7 @@ export default function TemperatureDetailsScreen() {
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.hourlyContainer}>
-              {hourlyForecast.map((item, index) => (
+              {hourlyForecast.slice(0, 5).map((item, index) => (
                 <View key={index} style={styles.hourlyItem}>
                   <Text style={styles.hourlyTime}>{item.time}</Text>
                   <Ionicons name={item.icon as IoniconsName} size={24} color="#6a3093" style={styles.hourlyIcon} />
@@ -525,7 +517,7 @@ export default function TemperatureDetailsScreen() {
         <View style={styles.forecastCard}>
           <View style={styles.forecastHeader}>
             <Ionicons name="calendar-outline" size={20} color="#333" />
-            <Text style={styles.forecastTitle}>Dự báo 7 ngày tới</Text>
+            <Text style={styles.forecastTitle}>Nhiệt độ trong ngày</Text>
           </View>
           
           <View style={styles.chartContainer}>
@@ -714,6 +706,12 @@ const styles = StyleSheet.create({
     color: '#666',
     width: 25,
     textAlign: 'right',
+    chartXLabel: {
+        textAlign: 'right',
+        fontSize: 12,
+        color: '#666',
+        marginTop: 5,
+      },
   },
   sunEventsContainer: {
     flexDirection: 'row',

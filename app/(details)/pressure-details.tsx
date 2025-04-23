@@ -74,10 +74,10 @@ export default function PressureDetailsScreen() {
       // Get hourly data from API
       const processedHourlyData = data.forecast.forecastday[0].hour.map((hour: any) => {
         const hourTime = new Date(hour.time).getHours();
-        // Scale down pressure for better visualization (divide by 20)
+        // Không chia cho 20 nữa, giữ nguyên giá trị áp suất
         return {
           hour: hourTime,
-          value: Math.round(hour.pressure_mb / 20)
+          value: Math.round(hour.pressure_mb)
         };
       });
       
@@ -132,9 +132,9 @@ export default function PressureDetailsScreen() {
     const graphHeight = chartHeight - (paddingVertical * 2);
     
     // Find min and max values for scaling with buffer
-    const values = hourlyData.map(item => item.value * 20); // Convert back to actual pressure values
-    const minValue = Math.min(...values) - 10;
-    const maxValue = Math.max(...values) + 10;
+    const values = hourlyData.map(item => item.value); 
+    const minValue = Math.min(...values) - 2;
+    const maxValue = Math.max(...values) + 2;
     const range = maxValue - minValue;
     
     // Calculate points for the path
@@ -142,7 +142,7 @@ export default function PressureDetailsScreen() {
     const points = hourlyData.map((item, index) => {
       const x = paddingHorizontal + (item.hour * (graphWidth / 24));
       // Invert Y coordinate (SVG 0,0 is top-left)
-      const actualValue = item.value * 20; // Convert back to actual pressure
+      const actualValue = item.value; 
       const y = paddingVertical + graphHeight - ((actualValue - minValue) / range * graphHeight);
       
       if (index === 0) {
@@ -151,7 +151,7 @@ export default function PressureDetailsScreen() {
         // Use bezier curves for smoother lines
         const prevPoint = hourlyData[index - 1];
         const prevX = paddingHorizontal + (prevPoint.hour * (graphWidth / 24));
-        const prevActualValue = prevPoint.value * 20; // Convert back to actual pressure
+        const prevActualValue = prevPoint.value;
         const prevY = paddingVertical + graphHeight - ((prevActualValue - minValue) / range * graphHeight);
         
         const cpX1 = prevX + (x - prevX) / 2;
@@ -180,7 +180,7 @@ export default function PressureDetailsScreen() {
           y2={y}
           stroke="#ccc"
           strokeWidth="1"
-          strokeDasharray={index === 0 ? "" : "3,3"}
+          strokeDasharray={"3,3"}
         />
       );
     });
@@ -188,7 +188,7 @@ export default function PressureDetailsScreen() {
     // Current time marker
     const currentPoint = hourlyData.find(item => item.hour === currentHour) || hourlyData[0];
     const currentX = paddingHorizontal + (currentHour * (graphWidth / 24));
-    const currentActualValue = currentPoint.value * 20; // Convert back to actual pressure
+    const currentActualValue = currentPoint.value;
     const currentY = paddingVertical + graphHeight - ((currentActualValue - minValue) / range * graphHeight);
     
     // Y-axis labels
@@ -229,7 +229,7 @@ export default function PressureDetailsScreen() {
             d={pathData}
             fill="none"
             stroke="#6a3093"
-            strokeWidth="2.5"
+            strokeWidth="2.5" 
           />
           
           {/* Current time vertical line */}
@@ -286,7 +286,7 @@ export default function PressureDetailsScreen() {
             fontWeight="bold"
             textAnchor="middle"
           >
-            {currentPoint.value * 20}
+            {currentPoint.value}
           </SvgText>
         </Svg>
         
@@ -367,16 +367,6 @@ export default function PressureDetailsScreen() {
           </View>
           
           <View style={styles.chartContainer}>
-            <View style={styles.yAxisLabels}>
-              {/* <Text style={styles.yAxisLabel}>hPa</Text>
-              <Text style={styles.yAxisValue}>1000</Text>
-              <Text style={styles.yAxisValue}>800</Text>
-              <Text style={styles.yAxisValue}>600</Text>
-              <Text style={styles.yAxisValue}>400</Text>
-              <Text style={styles.yAxisValue}>200</Text>
-              <Text style={styles.yAxisValue}>0</Text> */}
-            </View>
-            
             {renderPressureChart()}
           </View>
         </View>

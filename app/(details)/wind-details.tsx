@@ -148,10 +148,6 @@ export default function WindDetailsScreen() {
 
   // Render custom wind chart
   const renderWindChart = () => {
-    if (hourlyData.length === 0) {
-      return null;
-    }
-    
     const chartWidth = screenWidth - 90;
     const chartHeight = 180;
     const paddingHorizontal = 10;
